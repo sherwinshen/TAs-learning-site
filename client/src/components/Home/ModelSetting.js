@@ -114,8 +114,8 @@ class ModelSetting extends Component {
               <Radio value={"normalTeacher"}>Normal</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Guard 上界" name="upperGuard" initialValue={0}>
-            <InputNumber style={{ width: "90%" }} min={0} />
+          <Form.Item label="Guard 上界" name="upperGuard" initialValue={1}>
+            <InputNumber style={{ width: "90%" }} min={1} />
           </Form.Item>
           {this.state.boxType === "blackBox" ? (
             <Fragment>

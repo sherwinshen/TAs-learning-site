@@ -35,15 +35,15 @@ class LearnResult extends Component {
 
   componentWillUnmount() {
     clearInterval(timer);
-    if (this.state.id) {
-      // 删除后台的存储
-      Delete({ id: this.state.id }).then(() => {});
-    }
   }
 
   backToHome = () => {
     deleteID()
     deleteModel()
+    if (this.state.id) {
+      // 删除后台的存储
+      Delete({ id: this.state.id }).then(() => {});
+    }
     this.props.history.push("/");
   };
 
