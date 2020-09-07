@@ -1,0 +1,122 @@
+// 公共组件样式
+
+.header {
+  height: 60px;
+  width: 100%;
+  min-width: 1080px;
+  line-height: 60px;
+  position: relative;
+  background-color: #fff;
+  padding: 0 30px;
+  box-shadow: 0 4px 8px #f0f1f2;
+
+  &__logo {
+    height: 48px;
+  }
+
+  &__title {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: #1890ff;
+  }
+
+  &__btn {
+    display: inline-block;
+    position: absolute;
+    right: 30px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+}
+
+.module {
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+
+  &__title {
+    margin-bottom: -15px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+.bg-color-green {
+  background-color: #59d4d8;
+}
+
+.color-green {
+  color: #59d4d8;
+}
+
+.bg-color-red {
+  background-color: #fd7a90;
+}
+
+.color-red {
+  color: #fd7a90;
+}
+
+.bg-color-yellow {
+  background-color: #face33;
+}
+
+.color-yellow {
+  color: #face33;
+}
+
+.bg-color-purple {
+  background-color: #9687f1;
+}
+
+.color-purple {
+  color: #9687f1;
+}
+
+.bg-color-first {
+  background-color: #1c6bff;
+}
+
+.color-first {
+  color: #1c6bff;
+}
+
+.bg-color-second {
+  background-color: #5690ff;
+}
+
+.color-second {
+  color: #5690ff;
+}
+
+.bg-color-third {
+  background-color: #77a6ff;
+}
+
+.color-third {
+  color: #77a6ff;
+}
+
+.bg-color-forth {
+  background-color: #9abbff;
+}
+
+.color-forth {
+  color: #9abbff;
+}
+
+.bg-color-main {
+  background-color: #1890ff;
+}
+
+.color-main {
+  color: #1890ff;
+}

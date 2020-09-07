@@ -23,3 +23,5 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 /.idea
+/client/.idea
+/server/.idea

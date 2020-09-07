@@ -1,0 +1,49 @@
+// home 页面样式
+.home {
+  min-width: 1080px;
+
+  &__wrap {
+    &--left {
+      min-width: 675px;
+    }
+
+    &--left {
+      min-width: 405px;
+    }
+  }
+}
+
+.upload-btn {
+  .ant-upload {
+    width: 100%;
+  }
+}
+
+.info-wrap {
+  margin-top: 25px;
+  padding-right: 10px;
+  &--circle {
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+  }
+
+  &--strip {
+    display: inline-block;
+    height: 10px;
+    width: 60px;
+    border-radius: 10px;
+    margin-left: 10px;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  &__content {
+    font-size: 16px;
+    word-break: break-all;
+  }
+}
