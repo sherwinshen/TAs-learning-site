@@ -1,1 +1,18 @@
 // result 页面样式
+.result{
+  min-width: 1080px;
+}
+
+.learned-result {
+  margin-bottom: 20px;
+  &__item {
+    padding-right:20px;
+    margin-bottom: 10px;
+  }
+  &__title{
+    color: #1890ff;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 5px 0;
+  }
+}

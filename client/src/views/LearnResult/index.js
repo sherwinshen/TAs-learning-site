@@ -1,25 +1,98 @@
-import React, {Component} from "react";
-import {withRouter} from "react-router-dom";
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import Header from "../../components/common/Header";
-import {getToken} from "../../utils/token";
-import {message} from "antd";
+import {deleteID, deleteModel, getID, getModel} from "../../utils/session_storage";
+import { message, Row, Col } from "antd";
+import "./../../styles/result.scss";
+import { Processing, Result, Delete } from "../../api";
+import MiddleModel from "../../components/Result/MiddleModel";
+import ModelGraph from "../../components/Result/ModelGraph";
+import LearnedResult from "../../components/Result/LearnedResult";
+
+let timer;
 
 class LearnResult extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      id: getID(),
+      model: getModel(),
+      middleModels: [],
+      learnedModel: null,
+      result: null,
+      flag: false,
+    };
+  }
+
+  componentDidMount() {
+    if (!this.state.id) {
+      message.warning("请先上传模型并配置参数！");
+      this.backToHome();
+      return false;
+    }
+    this.getProcessing(this.state.id);
+  }
+
+  componentWillUnmount() {
+    clearInterval(timer);
+    if (this.state.id) {
+      // 删除后台的存储
+      Delete({ id: this.state.id }).then(() => {});
+    }
   }
 
   backToHome = () => {
-    this.props.history.push('/');
+    deleteID()
+    deleteModel()
+    this.props.history.push("/");
   };
 
-  componentDidMount() {
-    if (!getToken()) {
-      message.warning('请先上传模型并配置参数！')
-      this.backToHome()
-    }
-  }
+  // 开始轮询
+  getProcessing = (id) => {
+    timer = setInterval(() => {
+      Processing({ id })
+        .then((response) => {
+          const data = response.data;
+
+          if (data.code === 0) {
+            // 更新学习过程
+            this.setState({
+              processModels: data.processModels,
+            });
+          } else if (data.code === 1) {
+            // 学习结束
+            this.setState({
+              processModels: data.processModels,
+              flag: true,
+            });
+            clearInterval(timer);
+            this.getResult(id);
+          } else if (data.code === 2) {
+            // 没有更新
+          }
+        })
+        .catch((error) => {
+          clearInterval(timer);
+          console.log(error);
+        });
+    }, 5000);
+  };
+
+  // 获取结果
+  getResult = (id) => {
+    Result({ id })
+      .then((response) => {
+        message.success("学习成功！");
+        const data = response.data;
+        this.setState({
+          learnedModel: data.learnedModel,
+          result: data.result,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   render() {
     return (
@@ -29,6 +102,20 @@ class LearnResult extends Component {
           type="result"
           backToHome={this.backToHome}
         />
+        <Row className="learn-result__wrap">
+          <Col span={24}>
+            <MiddleModel middleModels={this.state.middleModels} />
+          </Col>
+          <Col span={12}>
+            <ModelGraph title={"原始模型"} model={this.state.model} />
+          </Col>
+          <Col span={12}>
+            <ModelGraph title={"结果模型"} model={this.state.learnedModel} />
+          </Col>
+          <Col span={24}>
+            <LearnedResult result={this.state.result} />
+          </Col>
+        </Row>
       </div>
     );
   }

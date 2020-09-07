@@ -24,13 +24,13 @@ class ModelInfo extends Component {
           color: "second",
         },
         {
-          title: "States",
-          content: this.state.model.states.toString(),
+          title: "Init State",
+          content: this.state.model.initState.toString(),
           color: "second",
         },
         {
-          title: "Init State",
-          content: this.state.model.initState.toString(),
+          title: "States",
+          content: this.state.model.states.toString(),
           color: "second",
         },
         {
@@ -56,6 +56,7 @@ class ModelInfo extends Component {
               width={"100%"}
               height={"450px"}
             />
+            <Divider />
             <List
               grid={{ gutter: 16, column: 4 }}
               dataSource={data}

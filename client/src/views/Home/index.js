@@ -5,7 +5,7 @@ import Header from "../../components/common/Header";
 import ModelInfo from "../../components/Home/ModelInfo";
 import ModelUpload from "../../components/Home/ModelUpload";
 import ModelSetting from "../../components/Home/ModelSetting";
-import { deleteToken } from "../../utils/token";
+import { deleteID } from "../../utils/session_storage";
 
 class Home extends Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    deleteToken();
+    deleteID();
   }
 
   onRef = (ref) => {

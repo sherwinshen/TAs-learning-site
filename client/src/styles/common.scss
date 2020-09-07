@@ -38,7 +38,7 @@
 
 .module {
   padding: 20px;
-  margin: 20px;
+  margin: 20px 20px 0 20px;
   border-radius: 10px;
   background-color: #fff;
 
@@ -47,6 +47,10 @@
     font-size: 18px;
     font-weight: 700;
   }
+}
+
+.text-align-center {
+  text-align: center;
 }
 
 .bg-color-green {

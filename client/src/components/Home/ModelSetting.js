@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import { Button, Divider, Form, InputNumber, message, Radio } from "antd";
 import { Learning } from "../../api";
-import { setToken } from "../../utils/token";
+import { setID, setModel } from "../../utils/session_storage";
 
 class ModelSetting extends Component {
   constructor(props) {
@@ -51,8 +51,8 @@ class ModelSetting extends Component {
   // 请求失败
   fail = () => {
     message.error("请求失败，请重新设置！");
-    this.reset()
-    this.props.deleteModel()
+    this.reset();
+    this.props.deleteModel();
   };
 
   onFinish = (values) => {
@@ -67,10 +67,12 @@ class ModelSetting extends Component {
         if (data.code === 1) {
           message.success("请求成功，正在学习中，请耐心等待！！");
           // 将请求 id 存至 session localstorage
-          setToken(data.id);
+          setID(data.id);
+          // 将模型信息存储至 session localstorage
+          setModel(this.state.model);
           this.props.history.push("/result");
         } else {
-          this.fail()
+          this.fail();
         }
       })
       .catch(() => {
