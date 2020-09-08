@@ -31,12 +31,21 @@ def get_process():
     with open(path, "r") as f:
         new_dict = json.load(f)
         f.close()
+
+    def getMiddleModels(modelList):
+        if len(modelList) <= 6:
+            return False, modelList
+        else:
+            return True, modelList[0:2] + modelList[-3:]
+
     if new_dict["isFinished"]:
-        return {"code": 1, "middleModels": new_dict["middleModels"], "lastModified": new_dict["lastModified"]}
+        ifOmit, middleModels = getMiddleModels(new_dict["middleModels"])
+        return {"code": 1, "middleModels": middleModels, "lastModified": new_dict["lastModified"], "ifOmit": ifOmit}
     elif lastModified == new_dict["lastModified"]:
         return {"code": 2}
     else:
-        return {"code": 0, "middleModels": new_dict["middleModels"], "lastModified": new_dict["lastModified"]}
+        ifOmit, middleModels = getMiddleModels(new_dict["middleModels"])
+        return {"code": 0, "middleModels": middleModels, "lastModified": new_dict["lastModified"], "ifOmit": ifOmit}
 
 
 @app.route("/result", methods=["POST"])
@@ -48,7 +57,7 @@ def get_result():
         new_dict = json.load(f)
         f.close()
     return {
-        "result":  new_dict["result"],
+        "result": new_dict["result"],
         "learnedModel": new_dict["model"]
     }
 

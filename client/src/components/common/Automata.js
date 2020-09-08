@@ -46,7 +46,7 @@ function Automata(props) {
   };
 
   return (
-    <div className="automata" onClick={zoom}>
+    <div className="automata">
       <Graphviz dot={`digraph { ${states} ${trans} }`} options={options} />
     </div>
   );

@@ -23,6 +23,7 @@ class LearnResult extends Component {
       id: getID(),
       model: getModel(),
       middleModels: [],
+      ifOmit: false,
       learnedModel: null,
       result: null,
       flag: false,
@@ -59,19 +60,18 @@ class LearnResult extends Component {
       Processing({ id, lastModified: this.state.lastModified })
         .then((response) => {
           const data = response.data;
-
           if (data.code === 0) {
-            if (data.processModels.length !== this.state.processModels) {
-              // 更新学习过程
-              this.setState({
-                processModels: data.processModels,
-                lastModified: data.lastModified,
-              });
-            }
+            // 更新学习过程
+            this.setState({
+              middleModels: data.middleModels,
+              ifOmit: data.ifOmit,
+              lastModified: data.lastModified,
+            });
           } else if (data.code === 1) {
             // 学习结束
             this.setState({
-              processModels: data.processModels,
+              middleModels: data.middleModels,
+              ifOmit: data.ifOmit,
               flag: true,
               lastModified: data.lastModified,
             });
@@ -85,7 +85,7 @@ class LearnResult extends Component {
           clearInterval(timer);
           console.log(error);
         });
-    }, 5000);
+    }, 3000);
   };
 
   // 获取结果
@@ -114,7 +114,7 @@ class LearnResult extends Component {
         />
         <Row className="learn-result__wrap">
           <Col span={24}>
-            <MiddleModel middleModels={this.state.middleModels} />
+            <MiddleModel middleModels={this.state.middleModels} ifOmit={this.state.ifOmit}/>
           </Col>
           <Col span={12}>
             <ModelGraph title={"原始模型"} model={this.state.model} />

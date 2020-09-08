@@ -63,7 +63,7 @@ def smart_teacher_learning(learning_id, request_data, debug=False):
         fa, sink_name = to_fa(table, t_number)
         h = fa_to_ota(fa, sink_name, sigma, t_number)
         # 添加到 middleModels
-        addMiddleModels(learning_id, h)
+        addMiddleModels(learning_id, remove_sinklocation(copy.deepcopy(h)))
         target = copy.deepcopy(h)
         eq_start = time.time()
         equivalent, ctx = equivalence_query(max_time_value, AA, h)

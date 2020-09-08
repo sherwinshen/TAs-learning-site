@@ -21,6 +21,6 @@
 
 ### 3.2 原型工具
 
-1. [OTALearning](https://github.com/Leslieaj/OTALearning): This prototype tool is dedicated to actively learning deterministic one-clock timed automata (DOTAs). (The evaluated artifact by TACAS-2020 is also archived in the [Figshare repository](https://doi.org/10.6084/m9.figshare.11545983.v3).)
+1. [OTALearning](https://github.com/Leslieaj/OTALearning) / [OTALearningNormal](https://github.com/Leslieaj/OTALearningNormal): This prototype tool is dedicated to actively learning deterministic one-clock timed automata (DOTAs). (The evaluated artifact by TACAS-2020 is also archived in the [Figshare repository](https://doi.org/10.6084/m9.figshare.11545983.v3).)
 2. [OTALearning_by_Testing](https://github.com/MrEnvision/learning_OTA_by_testing): This prototype tool is dedicated to actively learning DOTAs under more realistic assumptions within the framework of PAC learning. 
 
