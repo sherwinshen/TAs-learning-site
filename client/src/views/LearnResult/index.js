@@ -4,13 +4,15 @@ import Header from "../../components/common/Header";
 import {
   deleteID,
   deleteModel,
+  deleteTeacher,
   getID,
   getModel,
+  getTeacher,
 } from "../../utils/session_storage";
 import { message, Row, Col } from "antd";
 import "./../../styles/result.scss";
 import { Processing, Result, Delete } from "../../api";
-import MiddleModel from "../../components/Result/MiddleModel";
+import LearnProcess from "../../components/Result/LearnProcess";
 import ModelGraph from "../../components/Result/ModelGraph";
 import LearnedResult from "../../components/Result/LearnedResult";
 
@@ -28,6 +30,7 @@ class LearnResult extends Component {
       result: null,
       flag: false,
       lastModified: "",
+      teacherType: getTeacher(),
     };
   }
 
@@ -47,6 +50,7 @@ class LearnResult extends Component {
   backToHome = () => {
     deleteID();
     deleteModel();
+    deleteTeacher();
     if (this.state.id) {
       // 删除后台的存储
       Delete({ id: this.state.id }).then(() => {});
@@ -62,19 +66,27 @@ class LearnResult extends Component {
           const data = response.data;
           if (data.code === 0) {
             // 更新学习过程
-            this.setState({
-              middleModels: data.middleModels,
-              ifOmit: data.ifOmit,
-              lastModified: data.lastModified,
-            });
+            if (this.state.teacherType === "smartTeacher") {
+              this.setState({
+                middleModels: data.middleModels,
+                ifOmit: data.ifOmit,
+                lastModified: data.lastModified,
+              });
+            }
           } else if (data.code === 1) {
             // 学习结束
-            this.setState({
-              middleModels: data.middleModels,
-              ifOmit: data.ifOmit,
-              flag: true,
-              lastModified: data.lastModified,
-            });
+            if (this.state.teacherType === "smartTeacher") {
+              this.setState({
+                middleModels: data.middleModels,
+                ifOmit: data.ifOmit,
+                flag: true,
+                lastModified: data.lastModified,
+              });
+            } else {
+              this.setState({
+                flag: true,
+              });
+            }
             clearInterval(timer);
             this.getResult(id);
           } else if (data.code === 2) {
@@ -114,7 +126,11 @@ class LearnResult extends Component {
         />
         <Row className="learn-result__wrap">
           <Col span={24}>
-            <MiddleModel middleModels={this.state.middleModels} ifOmit={this.state.ifOmit}/>
+            <LearnProcess
+              middleModels={this.state.middleModels}
+              ifOmit={this.state.ifOmit}
+              teacherType={this.state.teacherType}
+            />
           </Col>
           <Col span={12}>
             <ModelGraph title={"原始模型"} model={this.state.model} />

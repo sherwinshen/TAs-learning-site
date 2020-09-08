@@ -1,6 +1,6 @@
-import React, { Component, Fragment } from "react";
-import { Divider, Spin, Row, Col, Result } from "antd";
-import { LoadingOutlined, EllipsisOutlined } from "@ant-design/icons";
+import React, {Component, Fragment} from "react";
+import {Divider, Spin, Row, Col, Result} from "antd";
+import {LoadingOutlined, EllipsisOutlined} from "@ant-design/icons";
 // import { Swiper, SwiperSlide } from "swiper/react";
 // import SwiperCore, { Navigation } from "swiper";
 // import "swiper/swiper.scss";
@@ -19,18 +19,15 @@ class MiddleModel extends Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    return { middleModels: nextProps.middleModels, ifOmit: nextProps.ifOmit };
+    return {middleModels: nextProps.middleModels, ifOmit: nextProps.ifOmit};
   }
 
   render() {
     const middleModels = this.state.middleModels;
     // const preView = middleModels.length;
-    const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+    const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
     return (
-      <div className="middle-model module">
-        <h4 className="module__title">学习过程</h4>
-        <Divider />
-        {this.state.ifOmit}
+      <div className="middle-model">
         {this.state.middleModels.length === 0 ? (
           <div className="text-align-center">
             <Spin tip="学习中..." indicator={antIcon} />

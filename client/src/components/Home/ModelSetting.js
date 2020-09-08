@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import { Button, Divider, Form, InputNumber, message, Radio } from "antd";
 import { Learning } from "../../api";
-import { setID, setModel } from "../../utils/session_storage";
+import { setID, setModel, setTeacher } from "../../utils/session_storage";
 
 class ModelSetting extends Component {
   constructor(props) {
@@ -68,8 +68,8 @@ class ModelSetting extends Component {
           message.success("请求成功，正在学习中，请耐心等待！！");
           // 将请求 id 存至 session localstorage
           setID(data.id);
-          // 将模型信息存储至 session localstorage
           setModel(this.state.model);
+          setTeacher(this.state.teacherType);
           this.props.history.push("/result");
         } else {
           this.fail();
