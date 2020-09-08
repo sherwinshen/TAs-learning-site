@@ -15,6 +15,7 @@ import { Processing, Result, Delete } from "../../api";
 import LearnProcess from "../../components/Result/LearnProcess";
 import ModelGraph from "../../components/Result/ModelGraph";
 import LearnedResult from "../../components/Result/LearnedResult";
+import LearnFail from "../../components/Result/LearnFail";
 
 let timer;
 
@@ -28,7 +29,7 @@ class LearnResult extends Component {
       ifOmit: false,
       learnedModel: null,
       result: null,
-      flag: false,
+      learnFlag: true,
       lastModified: "",
       teacherType: getTeacher(),
     };
@@ -79,12 +80,7 @@ class LearnResult extends Component {
               this.setState({
                 middleModels: data.middleModels,
                 ifOmit: data.ifOmit,
-                flag: true,
                 lastModified: data.lastModified,
-              });
-            } else {
-              this.setState({
-                flag: true,
               });
             }
             clearInterval(timer);
@@ -104,12 +100,20 @@ class LearnResult extends Component {
   getResult = (id) => {
     Result({ id })
       .then((response) => {
-        message.success("学习成功！");
         const data = response.data;
-        this.setState({
-          learnedModel: data.learnedModel,
-          result: data.result,
-        });
+        if (data.code === 0) {
+          message.success("学习成功！");
+          this.setState({
+            learnedModel: data.learnedModel,
+            result: data.result,
+            learnFlag: true,
+          });
+        } else {
+          message.warning("学习失败！");
+          this.setState({
+            learnFlag: false,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -126,20 +130,32 @@ class LearnResult extends Component {
         />
         <Row className="learn-result__wrap">
           <Col span={24}>
-            <LearnProcess
-              middleModels={this.state.middleModels}
-              ifOmit={this.state.ifOmit}
-              teacherType={this.state.teacherType}
-            />
+            {this.state.learnFlag ? (
+              <LearnProcess
+                middleModels={this.state.middleModels}
+                ifOmit={this.state.ifOmit}
+                teacherType={this.state.teacherType}
+              />
+            ) : (
+              <LearnFail title="学习过程" />
+            )}
           </Col>
           <Col span={12}>
             <ModelGraph title={"原始模型"} model={this.state.model} />
           </Col>
           <Col span={12}>
-            <ModelGraph title={"结果模型"} model={this.state.learnedModel} />
+            {this.state.learnFlag ? (
+              <ModelGraph title={"结果模型"} model={this.state.learnedModel} />
+            ) : (
+              <LearnFail title="结果模型" />
+            )}
           </Col>
           <Col span={24}>
-            <LearnedResult result={this.state.result} />
+            {this.state.learnFlag ? (
+              <LearnedResult result={this.state.result} />
+            ) : (
+              <LearnFail title="学习结果" />
+            )}
           </Col>
         </Row>
       </div>

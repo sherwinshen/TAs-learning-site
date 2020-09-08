@@ -56,10 +56,17 @@ def get_result():
     with open(path, "r") as f:
         new_dict = json.load(f)
         f.close()
-    return {
-        "result": new_dict["result"],
-        "learnedModel": new_dict["model"]
-    }
+    if new_dict["result"]["result"] == 'success':
+        return {
+            "code": 0,
+            "result": new_dict["result"],
+            "learnedModel": new_dict["model"]
+        }
+    else:
+        return {
+            "code": 1,
+            "result": new_dict["result"]
+        }
 
 
 @app.route("/delete", methods=["POST"])
