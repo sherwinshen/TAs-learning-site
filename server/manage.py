@@ -13,7 +13,7 @@ CORS(app, supports_credentials=True)
 executor = ThreadPoolExecutor()
 
 
-@app.route('/learning', methods=['POST'])
+@app.route("/learning", methods=["POST"])
 def learning():
     learning_id = str(uuid.uuid1())
     new_cache(learning_id)
@@ -22,28 +22,28 @@ def learning():
     return {"code": 1, "id": learning_id}
 
 
-@app.route('/processing', methods=['POST'])
+@app.route("/processing", methods=["POST"])
 def get_process():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
     lastModified = request_data["lastModified"]
-    path = './cache/' + learning_id + '.json'
+    path = "./cache/" + learning_id + ".json"
     with open(path, "r") as f:
         new_dict = json.load(f)
         f.close()
     if new_dict["isFinished"]:
-        return {"code": 1, "processModels": new_dict["processModels"], "lastModified": new_dict["lastModified"]}
+        return {"code": 1, "middleModels": new_dict["middleModels"], "lastModified": new_dict["lastModified"]}
     elif lastModified == new_dict["lastModified"]:
         return {"code": 2}
     else:
-        return {"code": 0, "processModels": new_dict["processModels"], "lastModified": new_dict["lastModified"]}
+        return {"code": 0, "middleModels": new_dict["middleModels"], "lastModified": new_dict["lastModified"]}
 
 
-@app.route('/result', methods=['POST'])
+@app.route("/result", methods=["POST"])
 def get_result():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
-    path = './cache/' + learning_id + '.json'
+    path = "./cache/" + learning_id + ".json"
     with open(path, "r") as f:
         new_dict = json.load(f)
         f.close()
@@ -53,13 +53,13 @@ def get_result():
     }
 
 
-@app.route('/delete', methods=['POST'])
-def delete_cache():
+@app.route("/delete", methods=["POST"])
+def delete_file():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
     delete_cache(learning_id)
     return {"code": 0, "msg": "Delete success!"}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(port=5000, debug=True)

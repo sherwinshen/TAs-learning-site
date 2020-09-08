@@ -9,7 +9,7 @@ def new_cache(cache_id):
         "createTime": time.time(),
         "lastModified": time.time(),
         "isFinished": False,
-        "processModels": []
+        "middleModels": []
     }
     json_data = json.dumps(json_text, indent=4)
     f = open('./cache/' + cache_id + '.json', 'w')
@@ -31,7 +31,10 @@ def update_cache(cache_id, values):
         new_dict = json.load(f)
         f.close()
     for key in values:
-        new_dict[key] = values[key]
+        if key == 'middleModels':
+            new_dict['middleModels'].append(values['middleModels'])
+        else:
+            new_dict[key] = values[key]
     with open(path, "w") as f:
         new_dict = json.dumps(new_dict, indent=4)
         f.write(new_dict)
