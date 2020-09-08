@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Header from "../../components/common/Header";
-import {deleteID, deleteModel, getID, getModel} from "../../utils/session_storage";
+import {
+  deleteID,
+  deleteModel,
+  getID,
+  getModel,
+} from "../../utils/session_storage";
 import { message, Row, Col } from "antd";
 import "./../../styles/result.scss";
 import { Processing, Result, Delete } from "../../api";
@@ -21,6 +26,7 @@ class LearnResult extends Component {
       learnedModel: null,
       result: null,
       flag: false,
+      lastModified: "",
     };
   }
 
@@ -38,8 +44,8 @@ class LearnResult extends Component {
   }
 
   backToHome = () => {
-    deleteID()
-    deleteModel()
+    deleteID();
+    deleteModel();
     if (this.state.id) {
       // 删除后台的存储
       Delete({ id: this.state.id }).then(() => {});
@@ -50,20 +56,24 @@ class LearnResult extends Component {
   // 开始轮询
   getProcessing = (id) => {
     timer = setInterval(() => {
-      Processing({ id })
+      Processing({ id, lastModified: this.state.lastModified })
         .then((response) => {
           const data = response.data;
 
           if (data.code === 0) {
-            // 更新学习过程
-            this.setState({
-              processModels: data.processModels,
-            });
+            if (data.processModels.length !== this.state.processModels) {
+              // 更新学习过程
+              this.setState({
+                processModels: data.processModels,
+                lastModified: data.lastModified,
+              });
+            }
           } else if (data.code === 1) {
             // 学习结束
             this.setState({
               processModels: data.processModels,
               flag: true,
+              lastModified: data.lastModified,
             });
             clearInterval(timer);
             this.getResult(id);
