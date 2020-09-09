@@ -30,7 +30,7 @@ class LearnResult extends Component {
       learnedModel: null,
       result: null,
       learnFlag: true,
-      lastModified: "",
+      lastModified: 0,
       teacherType: getTeacher(),
     };
   }
@@ -73,6 +73,10 @@ class LearnResult extends Component {
                 ifOmit: data.ifOmit,
                 lastModified: data.lastModified,
               });
+            } else {
+              this.setState({
+                lastModified: data.lastModified,
+              });
             }
           } else if (data.code === 1) {
             // 学习结束
@@ -80,6 +84,10 @@ class LearnResult extends Component {
               this.setState({
                 middleModels: data.middleModels,
                 ifOmit: data.ifOmit,
+                lastModified: data.lastModified,
+              });
+            } else {
+              this.setState({
                 lastModified: data.lastModified,
               });
             }

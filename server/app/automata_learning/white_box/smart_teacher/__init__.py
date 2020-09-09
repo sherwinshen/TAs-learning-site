@@ -9,7 +9,7 @@ from app.automata_learning.white_box.smart_teacher.equivalence import equivalenc
 from app.data_storage import update_cache
 
 
-def smart_teacher_learning(learning_id, request_data, debug=False):
+def white_smart_learning(learning_id, request_data, debug=False):
     A, _ = buildOTA(request_data['model'], 's')
     AA = buildAssistantOTA(A, 's')
     max_time_value = request_data['upperGuard']
@@ -102,6 +102,7 @@ def smart_teacher_learning(learning_id, request_data, debug=False):
             "model": ota_to_JSON(target_without_sink)
         }
     update_cache(learning_id, value)
+    return True
 
 
 def ota_to_JSON(ota):
