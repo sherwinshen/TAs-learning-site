@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {Divider, Spin, Row, Col, Result} from "antd";
+import {Spin, Row, Col, Result} from "antd";
 import {LoadingOutlined, EllipsisOutlined} from "@ant-design/icons";
 // import { Swiper, SwiperSlide } from "swiper/react";
 // import SwiperCore, { Navigation } from "swiper";

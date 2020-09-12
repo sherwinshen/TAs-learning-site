@@ -9,6 +9,7 @@ class ModelGraph extends Component {
     this.state = {
       title: this.props.title,
       model: this.props.model,
+      isFull: this.props.isFull
     };
   }
 
@@ -28,7 +29,7 @@ class ModelGraph extends Component {
             subTitle="请耐心等待"
           />
         ) : (
-          <Automata model={this.state.model} width={"100%"} height={"400px"} />
+          <Automata model={this.state.model} width={"100%"} height={"400px"} isFull={true}/>
         )}
       </div>
     );

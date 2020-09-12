@@ -149,11 +149,19 @@ class LearnResult extends Component {
             )}
           </Col>
           <Col span={12}>
-            <ModelGraph title={"原始模型"} model={this.state.model} />
+            <ModelGraph
+              title={"原始模型"}
+              model={this.state.model}
+              isFull={true}
+            />
           </Col>
           <Col span={12}>
             {this.state.learnFlag ? (
-              <ModelGraph title={"结果模型"} model={this.state.learnedModel} />
+              <ModelGraph
+                title={"结果模型"}
+                model={this.state.learnedModel}
+                isFull={true}
+              />
             ) : (
               <LearnFail title="结果模型" />
             )}

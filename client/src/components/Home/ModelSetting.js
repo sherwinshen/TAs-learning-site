@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import { Button, Divider, Form, InputNumber, message, Radio } from "antd";
 import { Learning } from "../../api";
 import { setID, setModel, setTeacher } from "../../utils/session_storage";
+import { getMinUpperGuard } from "../../utils/upperGuard";
 
 class ModelSetting extends Component {
   constructor(props) {
@@ -10,9 +11,10 @@ class ModelSetting extends Component {
     this.state = {
       boxType: "blackBox",
       teacherType: "smartTeacher",
-      upperGuard: 10,
+      upperGuard: getMinUpperGuard(this.props.model),
       epsilon: 0.1,
       delta: 0.1,
+      minUpperGuard: getMinUpperGuard(this.props.model),
       model: this.props.model,
     };
     this.formRef = React.createRef();
@@ -20,6 +22,8 @@ class ModelSetting extends Component {
 
   static getDerivedStateFromProps(nextProps) {
     return {
+      upperGuard: getMinUpperGuard(nextProps.model),
+      minUpperGuard: getMinUpperGuard(nextProps.model),
       model: nextProps.model,
     };
   }
@@ -114,8 +118,11 @@ class ModelSetting extends Component {
               <Radio value={"normalTeacher"}>Normal</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Guard 上界" name="upperGuard" initialValue={1}>
-            <InputNumber style={{ width: "90%" }} min={1} />
+          <Form.Item label="Guard 上界" name="upperGuard" initialValue={this.state.upperGuard}>
+            <InputNumber
+              style={{ width: "90%" }}
+              min={this.state.minUpperGuard}
+            />
           </Form.Item>
           {this.state.boxType === "blackBox" ? (
             <Fragment>

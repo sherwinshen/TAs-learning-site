@@ -90,6 +90,7 @@ def white_smart_learning(learning_id, request_data, debug=False):
     else:
         print('success')
         target_without_sink = remove_sinklocation(target)
+        # target_without_sink = target
         value = {
             "isFinished": True,
             "result": {

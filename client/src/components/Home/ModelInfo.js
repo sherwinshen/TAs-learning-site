@@ -47,12 +47,13 @@ class ModelInfo extends Component {
         {!this.state.model ? (
           <Result
             title="暂无数据"
-            subTitle="请先至「模型上传」处上传模型文件！"
+            subTitle="请先至「模型上传」处上传模型文件，仅支持 JSON 文件！"
           />
         ) : (
           <Fragment>
             <Automata
               model={this.state.model}
+              isFull={true}
               width={"100%"}
               height={"450px"}
             />
