@@ -4,8 +4,8 @@ from flask_cors import CORS
 import json
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from app.data_storage import new_cache, delete_cache
-from app.automata_learning import automata_learning
+from app.data_storage.init import new_cache, delete_cache
+from app.automata_learning.main import automata_learning
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -13,7 +13,7 @@ CORS(app, supports_credentials=True)
 executor = ThreadPoolExecutor()
 
 
-@app.route("/learning", methods=["POST"])
+@app.route("/api/learning", methods=["POST"])
 def learning():
     learning_id = str(uuid.uuid1())
     new_cache(learning_id)
@@ -22,7 +22,7 @@ def learning():
     return {"code": 1, "id": learning_id}
 
 
-@app.route("/processing", methods=["POST"])
+@app.route("/api/processing", methods=["POST"])
 def get_process():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
@@ -48,7 +48,7 @@ def get_process():
         return {"code": 0, "middleModels": middleModels, "lastModified": new_dict["lastModified"], "ifOmit": ifOmit}
 
 
-@app.route("/result", methods=["POST"])
+@app.route("/api/result", methods=["POST"])
 def get_result():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
@@ -69,7 +69,7 @@ def get_result():
         }
 
 
-@app.route("/delete", methods=["POST"])
+@app.route("/api/delete", methods=["POST"])
 def delete_file():
     request_data = json.loads(request.get_data(as_text=True))
     learning_id = request_data["id"]
@@ -77,5 +77,10 @@ def delete_file():
     return {"code": 0, "msg": "Delete success!"}
 
 
+@app.route("/api/test", methods=["GET"])
+def test():
+    return {"msg": "test success!"}
+
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run()

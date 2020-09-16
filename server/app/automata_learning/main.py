@@ -7,10 +7,10 @@
 #     "model": .....
 # }
 
-from app.automata_learning.white_box.smart_teacher import white_smart_learning
-from app.automata_learning.white_box.normal_teacher import white_normal_learning
-from app.automata_learning.black_box.pac_learning.smart_teacher import black_smart_pac_learning
-from app.automata_learning.black_box.pac_learning.normal_teacher import black_normal_pac_learning
+from app.automata_learning.white_box.smart_teacher.main import white_smart_learning
+from app.automata_learning.white_box.normal_teacher.main import white_normal_learning
+from app.automata_learning.black_box.pac_learning.smart_teacher.main import black_smart_pac_learning
+from app.automata_learning.black_box.pac_learning.normal_teacher.main import black_normal_pac_learning
 
 
 def automata_learning(learning_id, request_data):

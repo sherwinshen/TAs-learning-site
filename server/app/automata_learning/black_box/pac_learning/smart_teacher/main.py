@@ -7,7 +7,7 @@ from app.automata_learning.black_box.pac_learning.smart_teacher.hypothesis impor
 from app.automata_learning.black_box.pac_learning.smart_teacher.system import buildSystem
 from app.automata_learning.black_box.pac_learning.smart_teacher.validate import validate
 
-from app.data_storage import update_cache
+from app.data_storage.init import update_cache
 
 
 def black_smart_pac_learning(learning_id, request_data, debug=False):
@@ -84,7 +84,8 @@ def black_smart_pac_learning(learning_id, request_data, debug=False):
             eqNum = eqNum + 1
             stableHpy = copy.deepcopy(hypothesisOTA)
         else:
-            print("Comparator found a counterexample!!!")
+            if debug:
+                print("Comparator found a counterexample!!!")
             equivalent = False
 
         if not equivalent:

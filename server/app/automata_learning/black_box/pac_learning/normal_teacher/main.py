@@ -7,7 +7,7 @@ from app.automata_learning.black_box.pac_learning.normal_teacher.otatable import
 from app.automata_learning.black_box.pac_learning.normal_teacher.hypothesis import to_fa, fa_to_ota, remove_sinklocation
 from app.automata_learning.black_box.pac_learning.normal_teacher.pac_equiv import pac_equivalence_query, minimizeCounterexample
 
-from app.data_storage import update_cache
+from app.data_storage.init import update_cache
 
 
 def black_normal_pac_learning(learning_id, request_data, debug=True):

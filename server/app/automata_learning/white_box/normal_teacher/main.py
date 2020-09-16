@@ -7,7 +7,7 @@ from app.automata_learning.white_box.normal_teacher.otatable import init_table_n
 from app.automata_learning.white_box.normal_teacher.hypothesis import to_fa, fa_to_ota, remove_sinklocation
 from app.automata_learning.white_box.normal_teacher.equivalence import equivalence_query_normal
 
-from app.data_storage import update_cache
+from app.data_storage.init import update_cache
 
 
 def white_normal_learning(learning_id, request_data, debug=False):

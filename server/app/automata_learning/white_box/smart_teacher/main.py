@@ -6,7 +6,7 @@ from app.automata_learning.white_box.smart_teacher.otatable import init_table, a
 from app.automata_learning.white_box.smart_teacher.hypothesis import to_fa, fa_to_ota, remove_sinklocation
 from app.automata_learning.white_box.smart_teacher.equivalence import equivalence_query
 
-from app.data_storage import update_cache
+from app.data_storage.init import update_cache
 
 
 def white_smart_learning(learning_id, request_data, debug=False):
