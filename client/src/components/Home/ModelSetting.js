@@ -12,8 +12,8 @@ class ModelSetting extends Component {
       boxType: "blackBox",
       teacherType: "smartTeacher",
       upperGuard: getMinUpperGuard(this.props.model),
-      epsilon: 0.1,
-      delta: 0.1,
+      epsilon: 0.9,
+      delta: 0.9,
       minUpperGuard: getMinUpperGuard(this.props.model),
       model: this.props.model,
     };
@@ -65,6 +65,8 @@ class ModelSetting extends Component {
       return false;
     }
     values.model = this.state.model;
+    values.epsilon = 1 - values.epsilon;
+    values.delta = 1 - values.delta;
     Learning(values)
       .then((response) => {
         const data = response.data;
@@ -118,7 +120,11 @@ class ModelSetting extends Component {
               <Radio value={"normalTeacher"}>Normal</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="Guard 上界" name="upperGuard" initialValue={this.state.upperGuard}>
+          <Form.Item
+            label="Guard 上界"
+            name="upperGuard"
+            initialValue={this.state.upperGuard}
+          >
             <InputNumber
               style={{ width: "90%" }}
               min={this.state.minUpperGuard}
@@ -129,14 +135,14 @@ class ModelSetting extends Component {
               <Form.Item
                 label="Accuracy(0-1)"
                 name="epsilon"
-                initialValue={0.1}
+                initialValue={0.9}
               >
                 <InputNumber style={{ width: "90%" }} min={0} max={1} />
               </Form.Item>
               <Form.Item
                 label="Confidence(0-1)"
                 name="delta"
-                initialValue={0.1}
+                initialValue={0.9}
               >
                 <InputNumber style={{ width: "90%" }} min={0} max={1} />
               </Form.Item>

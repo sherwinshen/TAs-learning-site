@@ -37,7 +37,7 @@ class Home extends Component {
         <Header title="Timed Automata Learning Tool" type="home" />
         <Row className="home__wrap">
           <Col span={15} className="home__wrap--left">
-            <ModelInfo model={this.state.model} />
+            <ModelInfo model={this.state.model} deleteModel={this.deleteModel}/>
           </Col>
           <Col span={9} className="home__wrap--right">
             <ModelUpload setModel={this.setModel} onRef={this.onRef} />

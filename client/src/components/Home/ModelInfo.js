@@ -14,6 +14,10 @@ class ModelInfo extends Component {
     return { model: nextProps.model };
   }
 
+  removeModel = ()=>{
+    this.props.deleteModel()
+  }
+
   render() {
     let data;
     if (this.state.model) {
@@ -53,6 +57,7 @@ class ModelInfo extends Component {
           <Fragment>
             <Automata
               model={this.state.model}
+              removeModel={this.removeModel}
               isFull={true}
               width={"100%"}
               height={"450px"}

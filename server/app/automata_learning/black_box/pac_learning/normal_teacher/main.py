@@ -10,7 +10,7 @@ from app.automata_learning.black_box.pac_learning.normal_teacher.pac_equiv impor
 from app.data_storage.init import update_cache
 
 
-def black_normal_pac_learning(learning_id, request_data, debug=True):
+def black_normal_pac_learning(learning_id, request_data, debug=False):
     # build target system
     targetSys = buildOTA(request_data['model'], 's')
     # makeOTA(buildSystem(modelFile), filePath, '/results/targetSys')

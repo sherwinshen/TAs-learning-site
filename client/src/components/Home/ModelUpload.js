@@ -30,15 +30,33 @@ class ModelUpload extends Component {
       message.error("只支持 JSON 文件上传，可下载模版文件参考！");
       return false;
     }
-    this.setState({
-      fileList: [file],
-    });
     const reader = new FileReader();
     reader.readAsText(file, "UTF-8");
     reader.onload = (e) => {
-      message.success("文件上传成功!");
       const fileValue = JSON.parse(e.target.result);
+      if(!fileValue.acceptStates){
+        message.warning("文件不符合模版格式，请重新上传!");
+        return false
+      }
+      if(!fileValue.trans){
+        message.warning("文件不符合模版格式，请重新上传!");
+        return false
+      }
+      if(!fileValue.initState){
+        message.warning("文件不符合模版格式，请重新上传!");
+        return false
+      }
+      if(!fileValue.states){
+        message.warning("文件不符合模版格式，请重新上传!");
+        return false
+      }
+      if(!fileValue.inputs){
+        message.warning("文件不符合模版格式，请重新上传!");
+        return false
+      }
+      message.success("文件上传成功!");
       this.setState({
+        fileList: [file],
         model: fileValue,
       });
       this.props.setModel(fileValue);

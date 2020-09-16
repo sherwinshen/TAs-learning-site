@@ -31,3 +31,19 @@ export function Delete(data) {
     data,
   });
 }
+
+export function GetResult(data) {
+  return service.request({
+    url: '/getResult',
+    method: 'post',
+    data,
+  });
+}
+
+export function GetMiddle(data) {
+  return service.request({
+    url: '/getMiddle',
+    method: 'post',
+    data,
+  });
+}

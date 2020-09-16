@@ -77,6 +77,28 @@ def delete_file():
     return {"code": 0, "msg": "Delete success!"}
 
 
+@app.route("/api/getResult", methods=["POST"])
+def download_result():
+    request_data = json.loads(request.get_data(as_text=True))
+    learning_id = request_data["id"]
+    path = "./cache/" + learning_id + ".json"
+    with open(path, "r") as f:
+        new_dict = json.load(f)
+        f.close()
+    del new_dict["middleModels"]
+    return {"code": 0, "data": new_dict}
+
+@app.route("/api/getMiddle", methods=["POST"])
+def download_middle():
+    request_data = json.loads(request.get_data(as_text=True))
+    learning_id = request_data["id"]
+    path = "./cache/" + learning_id + ".json"
+    with open(path, "r") as f:
+        new_dict = json.load(f)
+        f.close()
+    return {"code": 0, "data": new_dict["middleModels"]}
+
+
 @app.route("/api/test", methods=["GET"])
 def test():
     return {"msg": "test success!"}

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import Header from "../../components/common/Header";
+import Header from "../../components/Result/Header";
 import {
   deleteID,
   deleteModel,
@@ -30,6 +30,7 @@ class LearnResult extends Component {
       learnedModel: null,
       result: null,
       learnFlag: true,
+      isFinished: false,
       lastModified: 0,
       teacherType: getTeacher(),
     };
@@ -85,10 +86,12 @@ class LearnResult extends Component {
                 middleModels: data.middleModels,
                 ifOmit: data.ifOmit,
                 lastModified: data.lastModified,
+                isFinished: true
               });
             } else {
               this.setState({
                 lastModified: data.lastModified,
+                isFinished: true
               });
             }
             clearInterval(timer);
@@ -143,6 +146,7 @@ class LearnResult extends Component {
                 middleModels={this.state.middleModels}
                 ifOmit={this.state.ifOmit}
                 teacherType={this.state.teacherType}
+                isFinished={this.state.isFinished}
               />
             ) : (
               <LearnFail title="学习过程" />
@@ -168,7 +172,7 @@ class LearnResult extends Component {
           </Col>
           <Col span={24}>
             {this.state.learnFlag ? (
-              <LearnedResult result={this.state.result} />
+              <LearnedResult result={this.state.result} isFinished={this.state.isFinished}/>
             ) : (
               <LearnFail title="学习结果" />
             )}
