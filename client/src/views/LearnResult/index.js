@@ -120,7 +120,7 @@ class LearnResult extends Component {
             learnFlag: true,
           });
         } else {
-          message.warning("学习失败！");
+          message.warning("学习失败或超时！");
           this.setState({
             learnFlag: false,
           });
@@ -141,7 +141,7 @@ class LearnResult extends Component {
         />
         <Row className="learn-result__wrap">
           <Col span={24}>
-            {this.state.learnFlag ? (
+            { (this.state.learnFlag || this.state.teacherType === "normalTeacher") ? (
               <LearnProcess
                 middleModels={this.state.middleModels}
                 ifOmit={this.state.ifOmit}

@@ -10,7 +10,7 @@ from app.automata_learning.white_box.normal_teacher.equivalence import equivalen
 from app.data_storage.init import update_cache
 
 
-def white_normal_learning(learning_id, request_data, debug=False):
+def white_normal_learning(learning_id, request_data, startTime, timeout, debug=False):
     A = buildOTA(request_data['model'], 's')
     AA = buildAssistantOTA(A, 's')
     max_time_value = request_data['upperGuard']
@@ -32,8 +32,8 @@ def white_normal_learning(learning_id, request_data, debug=False):
     eq_total_time = 0
     eq_number = 0
     target = None
-
-    while True:
+    equivalent = False
+    while True and time.time() - startTime <= timeout:
         depth, current_table = need_to_explore.get()
         t_number = t_number + 1
 
@@ -92,7 +92,7 @@ def white_normal_learning(learning_id, request_data, debug=False):
             break
 
     end_learning = time.time()
-    if target is None:
+    if target is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {

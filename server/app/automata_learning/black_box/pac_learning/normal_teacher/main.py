@@ -10,7 +10,7 @@ from app.automata_learning.black_box.pac_learning.normal_teacher.pac_equiv impor
 from app.data_storage.init import update_cache
 
 
-def black_normal_pac_learning(learning_id, request_data, debug=False):
+def black_normal_pac_learning(learning_id, request_data, startTime, timeout, debug=False):
     # build target system
     targetSys = buildOTA(request_data['model'], 's')
     # makeOTA(buildSystem(modelFile), filePath, '/results/targetSys')
@@ -39,8 +39,8 @@ def black_normal_pac_learning(learning_id, request_data, debug=False):
     eq_total_time = 0
     eq_number = 0
     target = None
-
-    while True:
+    equivalent = False
+    while True and time.time() - startTime <= timeout:
         if need_to_explore.qsize() == 0:
             break
         depth, current_table = need_to_explore.get()
@@ -115,7 +115,7 @@ def black_normal_pac_learning(learning_id, request_data, debug=False):
             break
     endLearning = time.time()
 
-    if target is None:
+    if target is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {

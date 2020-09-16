@@ -10,7 +10,7 @@ from app.automata_learning.black_box.pac_learning.smart_teacher.validate import 
 from app.data_storage.init import update_cache
 
 
-def black_smart_pac_learning(learning_id, request_data, debug=False):
+def black_smart_pac_learning(learning_id, request_data, startTime, timeout, debug=False):
     # build target system
     targetSys = buildSystem(request_data['model'])
 
@@ -40,7 +40,7 @@ def black_smart_pac_learning(learning_id, request_data, debug=False):
     stableHpy = None  # learned model
     tNum = 1  # number of table
 
-    while not equivalent:
+    while not equivalent and time.time() - startTime <= timeout:
         prepared = obsTable.isPrepared(table)
         while not prepared:
             # make closed
@@ -102,7 +102,7 @@ def black_smart_pac_learning(learning_id, request_data, debug=False):
 
     endLearning = time.time()
 
-    if stableHpy is None:
+    if stableHpy is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {
@@ -146,6 +146,7 @@ def ota_to_JSON(ota):
         "trans": trans
     }
     return value
+
 
 def addMiddleModels(learning_id, ota):
     value = {

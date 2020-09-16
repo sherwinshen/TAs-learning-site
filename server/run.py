@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 import json
 import uuid
+import time
 from concurrent.futures import ThreadPoolExecutor
 from app.data_storage.init import new_cache, delete_cache
 from app.automata_learning.main import automata_learning
@@ -18,7 +19,7 @@ def learning():
     learning_id = str(uuid.uuid1())
     new_cache(learning_id)
     request_data = json.loads(request.get_data(as_text=True))
-    executor.submit(automata_learning, learning_id, request_data)
+    executor.submit(automata_learning, learning_id, request_data, time.time())
     return {"code": 1, "id": learning_id}
 
 

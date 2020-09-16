@@ -13,15 +13,16 @@ from app.automata_learning.black_box.pac_learning.smart_teacher.main import blac
 from app.automata_learning.black_box.pac_learning.normal_teacher.main import black_normal_pac_learning
 
 
-def automata_learning(learning_id, request_data):
+def automata_learning(learning_id, request_data, startTime):
+    timeout = 3000
     if request_data["boxType"] == "blackBox":
         if request_data["teacherType"] == "smartTeacher":
-            black_smart_pac_learning(learning_id, request_data)
+            black_smart_pac_learning(learning_id, request_data, startTime, timeout)
         elif request_data["teacherType"] == "normalTeacher":
-            black_normal_pac_learning(learning_id, request_data)
+            black_normal_pac_learning(learning_id, request_data, startTime, timeout)
     elif request_data["boxType"] == "whiteBox":
         if request_data["teacherType"] == "smartTeacher":
-            white_smart_learning(learning_id, request_data)
+            white_smart_learning(learning_id, request_data, startTime, timeout)
         elif request_data["teacherType"] == "normalTeacher":
-            white_normal_learning(learning_id, request_data)
+            white_normal_learning(learning_id, request_data, startTime, timeout)
     return True

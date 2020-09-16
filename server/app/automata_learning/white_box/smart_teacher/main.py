@@ -9,7 +9,7 @@ from app.automata_learning.white_box.smart_teacher.equivalence import equivalenc
 from app.data_storage.init import update_cache
 
 
-def white_smart_learning(learning_id, request_data, debug=False):
+def white_smart_learning(learning_id, request_data, startTime, timeout, debug=False):
     A, _ = buildOTA(request_data['model'], 's')
     AA = buildAssistantOTA(A, 's')
     max_time_value = request_data['upperGuard']
@@ -29,7 +29,7 @@ def white_smart_learning(learning_id, request_data, debug=False):
     table = copy.deepcopy(T1)
     eq_number = 0
     target = None
-    while not equivalent:
+    while not equivalent and time.time() - startTime <= timeout:
         prepared = table.is_prepared(AA)
         while not prepared:
             flag_closed, new_S, new_R, move = table.is_closed()
@@ -79,7 +79,7 @@ def white_smart_learning(learning_id, request_data, debug=False):
                 table.show()
                 print("--------------------------------------------------")
     end_learning = time.time()
-    if target is None:
+    if target is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {
