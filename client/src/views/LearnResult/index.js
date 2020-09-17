@@ -1,13 +1,15 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import Header from "../../components/Result/Header";
 import {
   deleteID,
   deleteModel,
   deleteTeacher,
+  deleteSetting,
   getID,
   getModel,
   getTeacher,
+  getSetting,
 } from "../../utils/session_storage";
 import { message, Row, Col } from "antd";
 import "./../../styles/result.scss";
@@ -23,6 +25,7 @@ class LearnResult extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      setting: getSetting(),
       id: getID(),
       model: getModel(),
       middleModels: [],
@@ -53,6 +56,7 @@ class LearnResult extends Component {
     deleteID();
     deleteModel();
     deleteTeacher();
+    deleteSetting();
     if (this.state.id) {
       // 删除后台的存储
       Delete({ id: this.state.id }).then(() => {});
@@ -86,12 +90,12 @@ class LearnResult extends Component {
                 middleModels: data.middleModels,
                 ifOmit: data.ifOmit,
                 lastModified: data.lastModified,
-                isFinished: true
+                isFinished: true,
               });
             } else {
               this.setState({
                 lastModified: data.lastModified,
-                isFinished: true
+                isFinished: true,
               });
             }
             clearInterval(timer);
@@ -131,6 +135,40 @@ class LearnResult extends Component {
       });
   };
 
+  renderSetting = () => {
+    let arr = Object.entries(this.state.setting);
+    console.log(arr);
+    return (
+      <Col
+        span={24}
+      >
+        <div className="module" style={{display: "flex", justifyContent: "space-between" }}>
+          {arr.map((item) => {
+            let key;
+            if (item[0] === "timeout") {
+              key = "超时设置(s)";
+            } else if (item[0] === "upperGuard") {
+              key = "Guard 上界";
+            } else if (item[0] === "boxType") {
+              key = "Box Type";
+            } else if (item[0] === "teacherType") {
+              key = "Teacher Type";
+            } else if (item[0] === "epsilon") {
+              key = "Accuracy(0-1)";
+            } else if (item[0] === "delta") {
+              key = "Confidence(0-1)";
+            }
+            return (
+              <div key={item[0]} className="title">
+                <span>{key}</span>: <span>{item[1]}</span>
+              </div>
+            );
+          })}
+        </div>
+      </Col>
+    );
+  };
+
   render() {
     return (
       <div className="result">
@@ -140,8 +178,10 @@ class LearnResult extends Component {
           backToHome={this.backToHome}
         />
         <Row className="learn-result__wrap">
+          {this.renderSetting()}
           <Col span={24}>
-            { (this.state.learnFlag || this.state.teacherType === "normalTeacher") ? (
+            {this.state.learnFlag ||
+            this.state.teacherType === "normalTeacher" ? (
               <LearnProcess
                 middleModels={this.state.middleModels}
                 ifOmit={this.state.ifOmit}
@@ -172,7 +212,10 @@ class LearnResult extends Component {
           </Col>
           <Col span={24}>
             {this.state.learnFlag ? (
-              <LearnedResult result={this.state.result} isFinished={this.state.isFinished}/>
+              <LearnedResult
+                result={this.state.result}
+                isFinished={this.state.isFinished}
+              />
             ) : (
               <LearnFail title="学习结果" />
             )}

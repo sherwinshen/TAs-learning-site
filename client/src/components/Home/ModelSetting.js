@@ -1,9 +1,9 @@
-import React, { Component, Fragment } from "react";
-import { withRouter } from "react-router-dom";
-import { Button, Divider, Form, InputNumber, message, Radio } from "antd";
-import { Learning } from "../../api";
-import { setID, setModel, setTeacher } from "../../utils/session_storage";
-import { getMinUpperGuard } from "../../utils/upperGuard";
+import React, {Component, Fragment} from "react";
+import {withRouter} from "react-router-dom";
+import {Button, Divider, Form, InputNumber, message, Radio} from "antd";
+import {Learning} from "../../api";
+import {setID, setModel, setTeacher, setSetting} from "../../utils/session_storage";
+import {getMinUpperGuard} from "../../utils/upperGuard";
 
 class ModelSetting extends Component {
   constructor(props) {
@@ -14,6 +14,7 @@ class ModelSetting extends Component {
       upperGuard: getMinUpperGuard(this.props.model),
       epsilon: 0.9,
       delta: 0.9,
+      timeout: 60,
       minUpperGuard: getMinUpperGuard(this.props.model),
       model: this.props.model,
     };
@@ -49,6 +50,7 @@ class ModelSetting extends Component {
       upperGuard: 10,
       epsilon: 0.1,
       delta: 0.1,
+      timeout: 60,
     });
   };
 
@@ -64,6 +66,7 @@ class ModelSetting extends Component {
       message.error("Please upload the model first!");
       return false;
     }
+    setSetting(values)
     values.model = this.state.model;
     values.epsilon = 1 - values.epsilon;
     values.delta = 1 - values.delta;
@@ -90,12 +93,12 @@ class ModelSetting extends Component {
     return (
       <div className="model-setting module">
         <h4 className="module__title">参数设置</h4>
-        <Divider />
+        <Divider/>
         <Form
           name="form"
           onFinish={this.onFinish}
-          labelCol={{ span: 7 }}
-          wrapperCol={{ span: 17 }}
+          labelCol={{span: 7}}
+          wrapperCol={{span: 17}}
           ref={this.formRef}
         >
           <Form.Item label="Box Type" name="boxType" initialValue={"blackBox"}>
@@ -121,12 +124,19 @@ class ModelSetting extends Component {
             </Radio.Group>
           </Form.Item>
           <Form.Item
+            label="超时设置(s)"
+            name="timeout"
+            initialValue={60}
+          >
+            <InputNumber style={{width: "90%"}} min={60}/>
+          </Form.Item>
+          <Form.Item
             label="Guard 上界"
             name="upperGuard"
             initialValue={this.state.upperGuard}
           >
             <InputNumber
-              style={{ width: "90%" }}
+              style={{width: "90%"}}
               min={this.state.minUpperGuard}
             />
           </Form.Item>
@@ -137,22 +147,22 @@ class ModelSetting extends Component {
                 name="epsilon"
                 initialValue={0.9}
               >
-                <InputNumber style={{ width: "90%" }} min={0} max={1} />
+                <InputNumber style={{width: "90%"}} min={0} max={1}/>
               </Form.Item>
               <Form.Item
                 label="Confidence(0-1)"
                 name="delta"
                 initialValue={0.9}
               >
-                <InputNumber style={{ width: "90%" }} min={0} max={1} />
+                <InputNumber style={{width: "90%"}} min={0} max={1}/>
               </Form.Item>
             </Fragment>
           ) : null}
-          <Form.Item style={{ justifyContent: "center", textAlign: "center" }}>
+          <Form.Item style={{justifyContent: "center", textAlign: "center"}}>
             <Button type="primary" htmlType="submit">
               开始学习
             </Button>
-            <Button style={{ marginLeft: "20px" }} onClick={this.reset}>
+            <Button style={{marginLeft: "20px"}} onClick={this.reset}>
               重置参数
             </Button>
           </Form.Item>

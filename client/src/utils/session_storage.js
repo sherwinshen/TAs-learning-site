@@ -33,3 +33,15 @@ export function getTeacher() {
 export function deleteTeacher() {
   sessionStorage.removeItem("teacherType");
 }
+
+export function setSetting(data) {
+  sessionStorage.setItem("setting", JSON.stringify(data));
+}
+
+export function getSetting() {
+  return JSON.parse(sessionStorage.getItem("setting"));
+}
+
+export function deleteSetting() {
+  sessionStorage.removeItem("setting");
+}
