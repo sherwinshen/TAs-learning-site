@@ -14,7 +14,7 @@
 
 ### 1.3 接口设计
 
-<img src="./接口图.png" style="zoom:80%;" />
+<img src="./docs/接口图.png" style="zoom:80%;" />
 
 ## 2. 成果支撑
 

@@ -14,33 +14,33 @@ class ModelInfo extends Component {
     return { model: nextProps.model };
   }
 
-  removeModel = ()=>{
-    this.props.deleteModel()
-  }
+  removeModel = () => {
+    this.props.deleteModel();
+  };
 
   render() {
     let data;
     if (this.state.model) {
       data = [
         {
-          title: "Inputs",
+          title: "系统行为集",
           content: this.state.model.inputs.toString(),
-          color: "second",
+          color: "first ",
         },
         {
-          title: "Init State",
-          content: this.state.model.initState.toString(),
-          color: "second",
-        },
-        {
-          title: "States",
+          title: "系统状态集",
           content: this.state.model.states.toString(),
-          color: "second",
+          color: "first ",
         },
         {
-          title: "Accept States",
+          title: "初始状态",
+          content: this.state.model.initState.toString(),
+          color: "first ",
+        },
+        {
+          title: "接受状态集",
           content: this.state.model.acceptStates.toString(),
-          color: "second",
+          color: "first ",
         },
       ];
     }
@@ -50,8 +50,9 @@ class ModelInfo extends Component {
         <Divider />
         {!this.state.model ? (
           <Result
+            status="warning"
             title="暂无数据"
-            subTitle="请先至「模型上传」处上传模型文件，仅支持 JSON 文件！"
+            subTitle="请先至右侧「模型上传」处上传包含模型信息的JSON文件，请严格按照格式说明！"
           />
         ) : (
           <Fragment>
@@ -68,12 +69,10 @@ class ModelInfo extends Component {
               dataSource={data}
               renderItem={(item) => (
                 <List.Item className="info-wrap">
-                  <div>
-                    <span className={`info-wrap--circle bg-color-${item.color}`} />
-                    <span className={`info-wrap--strip bg-color-${item.color}`} />
-                  </div>
-                  <h2 className={`info-wrap__title color-${item.color}`}> {item.title} </h2>
-                  <h4 className={`info-wrap__content`}> {item.content}</h4>
+                  <h2 className={`info-wrap__title color-${item.color}`}>{item.title}</h2>
+                  <h4 className={`info-wrap__content`}>
+                    {item.content}
+                  </h4>
                 </List.Item>
               )}
             />

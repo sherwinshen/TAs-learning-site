@@ -77,7 +77,7 @@ class LearnProcess extends Component {
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={"Normal Teacher 暂不支持学习过程展示!"}
+            description={"Normal 类型学习暂不支持中间过程展示!"}
           />
         )}
       </div>

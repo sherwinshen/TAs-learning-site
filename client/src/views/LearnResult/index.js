@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Header from "../../components/Result/Header";
 import {
@@ -16,6 +16,7 @@ import "./../../styles/result.scss";
 import { Processing, Result, Delete } from "../../api";
 import LearnProcess from "../../components/Result/LearnProcess";
 import ModelGraph from "../../components/Result/ModelGraph";
+import LearnedModel from "../../components/Result/LearnedModel";
 import LearnedResult from "../../components/Result/LearnedResult";
 import LearnFail from "../../components/Result/LearnFail";
 
@@ -137,30 +138,44 @@ class LearnResult extends Component {
 
   renderSetting = () => {
     let arr = Object.entries(this.state.setting);
-    console.log(arr);
     return (
-      <Col
-        span={24}
-      >
-        <div className="module" style={{display: "flex", justifyContent: "space-between" }}>
+      <Col span={24}>
+        <div
+          className="module"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
           {arr.map((item) => {
-            let key;
+            let key, value;
             if (item[0] === "timeout") {
-              key = "超时设置(s)";
+              key = "超时设置(min)";
+              value = item[1]
             } else if (item[0] === "upperGuard") {
-              key = "Guard 上界";
+              key = "Guard上界";
+              value = item[1]
             } else if (item[0] === "boxType") {
-              key = "Box Type";
+              key = "模型类型";
+              if (item[1] === 'blackBox'){
+                value = "黑(灰)盒"
+              }else {
+                value = "白盒"
+              }
             } else if (item[0] === "teacherType") {
-              key = "Teacher Type";
+              key = "学习类型";
+              if (item[1] === 'smartTeacher'){
+                value = "smart"
+              }else {
+                value = "normal"
+              }
             } else if (item[0] === "epsilon") {
-              key = "Accuracy(0-1)";
+              key = "精确值(0-1)";
+              value = item[1]
             } else if (item[0] === "delta") {
-              key = "Confidence(0-1)";
+              key = "置信度(0-1)";
+              value = item[1]
             }
             return (
               <div key={item[0]} className="title">
-                <span>{key}</span>: <span>{item[1]}</span>
+                <span>{key}</span>: <span>{value}</span>
               </div>
             );
           })}
@@ -173,7 +188,7 @@ class LearnResult extends Component {
     return (
       <div className="result">
         <Header
-          title="Learning Result"
+          title="学习过程与结果"
           type="result"
           backToHome={this.backToHome}
         />
@@ -201,10 +216,11 @@ class LearnResult extends Component {
           </Col>
           <Col span={12}>
             {this.state.learnFlag ? (
-              <ModelGraph
+              <LearnedModel
                 title={"结果模型"}
                 model={this.state.learnedModel}
                 isFull={true}
+                isFinished={this.state.isFinished}
               />
             ) : (
               <LearnFail title="结果模型" />

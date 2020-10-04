@@ -23,26 +23,27 @@
   padding-right: 10px;
   &--circle {
     display: inline-block;
-    height: 10px;
-    width: 10px;
-    border-radius: 10px;
+    height: 6px;
+    width: 6px;
+    border-radius: 6px;
   }
 
   &--strip {
     display: inline-block;
-    height: 10px;
-    width: 60px;
-    border-radius: 10px;
-    margin-left: 10px;
+    height: 6px;
+    width: 40px;
+    border-radius: 6px;
+    margin-left: 6px;
   }
 
   &__title {
-    font-weight: 700;
-    font-size: 20px;
+    font-size: 16px;
+    text-align: center;
   }
 
   &__content {
-    font-size: 16px;
+    font-size: 14px;
     word-break: break-all;
+    text-align: center;
   }
 }

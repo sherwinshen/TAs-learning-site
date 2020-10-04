@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import {Divider, Spin, Row, Col, Button, message} from "antd";
+import { Divider, Spin, Row, Col, Button, message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import {GetResult} from "../../api";
-import {getID} from "../../utils/session_storage";
+import { GetResult } from "../../api";
+import { getID } from "../../utils/session_storage";
 
 class LearnedResult extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class LearnedResult extends Component {
     this.state = {
       result: this.props.result,
       isFinished: this.props.isFinished,
-      id: this.props.id
+      id: this.props.id,
     };
   }
 
@@ -23,10 +23,12 @@ class LearnedResult extends Component {
       .then((response) => {
         const data = response.data;
         if (data.code === 0) {
-          const a = document.createElement('a');
-          const blob = new Blob([ JSON.stringify(data.data) ], {type : 'application/json'});
+          const a = document.createElement("a");
+          const blob = new Blob([JSON.stringify(data.data)], {
+            type: "application/json",
+          });
           a.href = URL.createObjectURL(blob);
-          a.download = '学习结果.json'
+          a.download = "学习结果.json";
           a.click();
           message.success("下载成功！");
         } else {
@@ -36,21 +38,64 @@ class LearnedResult extends Component {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   render() {
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
     let result = [];
     if (this.state.result) {
       for (let [key, value] of Object.entries(this.state.result)) {
-        result.push([key, value]);
+        if (key === "result") {
+          result.push(["学习结果", value]);
+        } else if (key === "learningTime") {
+          result.push(["学习时间", value]);
+        } else if (key === "mqNum") {
+          result.push(["成员查询数", value]);
+        } else if (key === "eqNum") {
+          result.push(["等价查询数", value]);
+        } else if (key === "testNum") {
+          result.push(["测试数", value]);
+        } else if (key === "tables explored") {
+          result.push(["观察表数", value]);
+        } else if (key === "correct") {
+          result.push(["是否正确", value]);
+        } else if (key === "passingRate") {
+          result.push(["验证集通过率", value]);
+        }
       }
+      result.sort(function (a, b) {
+        // order是规则
+        const order = [
+          "学习结果",
+          "学习时间",
+          "成员查询数",
+          "等价查询数",
+          "测试数",
+          "观察表数",
+          "是否正确",
+          "验证集通过率",
+        ];
+        return order.indexOf(a[0]) - order.indexOf(b[0]);
+      });
     }
+
     return (
       <div className="learned-result module">
-        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '-10px'}}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "-10px",
+          }}
+        >
           <h4 className="module__title">学习结果{this.state.isFinished}</h4>
-          <Button type="primary" disabled={!this.state.isFinished} onClick={this.getResult}>下载学习结果</Button>
+          <Button
+            type="primary"
+            disabled={!this.state.isFinished}
+            onClick={this.getResult}
+          >
+            下载学习结果
+          </Button>
         </div>
         <Divider />
         {!this.state.result ? (

@@ -19,15 +19,15 @@ class ModelUpload extends Component {
   // 下载模板文件
   download = () => {
     const a = document.createElement("a");
-    a.href = "./static/model_template.json";
-    a.download = "model_template.json";
+    a.href = "./static/model_template.md";
+    a.download = "model_template.md";
     a.click();
   };
 
   // 上传模型文件
   upload = (file) => {
     if (file.type !== "application/json") {
-      message.error("只支持 JSON 文件上传，可下载模版文件参考！");
+      message.error("只支持 JSON 文件上传，可下载格式说明参考！");
       return false;
     }
     const reader = new FileReader();
@@ -35,23 +35,23 @@ class ModelUpload extends Component {
     reader.onload = (e) => {
       const fileValue = JSON.parse(e.target.result);
       if(!fileValue.acceptStates){
-        message.warning("文件不符合模版格式，请重新上传!");
+        message.warning("文件不符合模型格式，请重新上传!");
         return false
       }
       if(!fileValue.trans){
-        message.warning("文件不符合模版格式，请重新上传!");
+        message.warning("文件不符合模型格式，请重新上传!");
         return false
       }
       if(!fileValue.initState){
-        message.warning("文件不符合模版格式，请重新上传!");
+        message.warning("文件不符合模型格式，请重新上传!");
         return false
       }
       if(!fileValue.states){
-        message.warning("文件不符合模版格式，请重新上传!");
+        message.warning("文件不符合模型格式，请重新上传!");
         return false
       }
       if(!fileValue.inputs){
-        message.warning("文件不符合模版格式，请重新上传!");
+        message.warning("文件不符合模型格式，请重新上传!");
         return false
       }
       message.success("文件上传成功!");
@@ -87,13 +87,13 @@ class ModelUpload extends Component {
               onRemove={this.remove}
             >
               <Button type="primary" icon={<UploadOutlined />} block>
-                上传模型
+                上传模型文件
               </Button>
             </Upload>
           </Col>
           <Col span={10}>
             <Button icon={<DownloadOutlined />} block onClick={this.download}>
-              下载模版
+              下载格式说明
             </Button>
           </Col>
         </Row>

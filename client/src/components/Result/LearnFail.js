@@ -17,7 +17,7 @@ class LearnFail extends Component {
         <Divider/>
         <Result
           status="error"
-          title="学习失败或超时，请重试！"
+          title="学习失败或超时，请返回首页重试！"
         />
       </div>
     )

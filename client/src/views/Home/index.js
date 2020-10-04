@@ -34,7 +34,7 @@ class Home extends Component {
   render() {
     return (
       <div className="home">
-        <Header title="Timed Automata Learning Tool" type="home" />
+        <Header title="时间自动机学习工具" type="home" />
         <Row className="home__wrap">
           <Col span={15} className="home__wrap--left">
             <ModelInfo model={this.state.model} deleteModel={this.deleteModel}/>

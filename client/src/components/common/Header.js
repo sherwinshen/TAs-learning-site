@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Modal } from "antd";
-import { ArrowLeftOutlined, InfoCircleTwoTone } from "@ant-design/icons";
+import { ArrowLeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 class Header extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class Header extends Component {
     });
   };
 
-  handleCancel = (e) => {
+  handleCancel = () => {
     this.setState({
       visible: false,
     });
@@ -58,7 +58,9 @@ class Header extends Component {
               返回首页
             </Button>
           ) : null}
-          <InfoCircleTwoTone className="info-icon" onClick={this.showInfo} />
+          <Button type="text" icon={<InfoCircleOutlined />} onClick={this.showInfo}>
+            使用说明
+          </Button>
         </div>
         <Modal
           title="使用说明"
@@ -70,14 +72,21 @@ class Header extends Component {
           width={"60%"}
         >
           <p>
-            如果网站使用出现错误，您也可以下载原型工具使用，下载地址：
-            <a href={"https://github.com/MrEnvision/learning_OTA_by_testing"}>
-              White Box Learning Tool
+            如果网站使用出现错误，您也可以直接下载原型工具使用，下载地址：
+            <a
+              href={"https://github.com/MrEnvision/learning_OTA_by_testing"}
+              target="blank"
+            >
+              黑(灰)盒学习工具
             </a>{" "}
             和{" "}
-            <a href={"https://github.com/Leslieaj/OTALearningNormal"}>
-              Black Box Learning Tool
-            </a>。
+            <a
+              href={"https://github.com/Leslieaj/OTALearning"}
+              target="blank"
+            >
+              白盒学习工具
+            </a>
+            。
           </p>
         </Modal>
       </div>

@@ -22,7 +22,8 @@
     margin: auto;
     text-align: center;
     font-size: 24px;
-    font-weight: 900;
+    font-weight: bolder;
+    letter-spacing: 4px;
     color: #1890ff;
   }
 
@@ -34,8 +35,13 @@
     bottom: 0;
     margin: auto;
   }
+  .info-title{
+    line-height: 60px;
+    font-size: 14px;
+    color: #313333;
+  }
   .info-icon {
-    margin-left: 30px;
+    margin-left: 10px;
     font-size: 20px;
     cursor: pointer;
   }
@@ -49,8 +55,9 @@
 
   &__title {
     margin-bottom: -15px;
+    color: #313333;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 500;
   }
 }
 
@@ -75,11 +82,11 @@
 }
 
 .bg-color-yellow {
-  background-color: #face33;
+  background-color: #ffb026;
 }
 
 .color-yellow {
-  color: #face33;
+  color: #ffb026;
 }
 
 .bg-color-purple {
@@ -91,11 +98,11 @@
 }
 
 .bg-color-first {
-  background-color: #1c6bff;
+  background-color: #1890ff;
 }
 
 .color-first {
-  color: #1c6bff;
+  color: #1890ff;
 }
 
 .bg-color-second {

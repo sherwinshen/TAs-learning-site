@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Modal } from "antd";
-import { ArrowLeftOutlined, InfoCircleTwoTone } from "@ant-design/icons";
+import {ArrowLeftOutlined, InfoCircleOutlined} from "@ant-design/icons";
 
 class Header extends Component {
   constructor(props) {
@@ -52,7 +52,9 @@ class Header extends Component {
         </Button>
         <h1 className="header__title">{this.state.title}</h1>
         <div className="header__btn">
-          <InfoCircleTwoTone className="info-icon" onClick={this.showInfo} />
+          <Button type="text" icon={<InfoCircleOutlined />} onClick={this.showInfo}>
+            使用说明
+          </Button>
         </div>
         <Modal
           title="使用说明"
