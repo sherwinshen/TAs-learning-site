@@ -2,17 +2,11 @@ from app.automata_learning.white_box.smart_teacher.fa import FAState, FATran, FA
 from app.automata_learning.white_box.smart_teacher.interval import Constraint
 from app.automata_learning.white_box.smart_teacher.ota import Location, OTA, OTATran
 
-
-# from otatable import *
-
+# Given an ota table, build a finite automaton.
 def to_fa(otatable, n):
-    """Given an ota table, build a finite automaton.
-    """
-    ### First, need to transform the resettimedwords of the elements in S_U_R 
-    ### to clock valuation timedwords with reset informations.
-    # S_U_R = [s for s in otatable.S] + [r for r in otatable.R]
-    # table_elements = [Element(dRTWs_to_lRTWs(e.tws), e.value) for e in S_U_R]
+    ### First, need to transform the resettimedwords of the elements in S_U_R  to clock valuation timedwords with reset informations.
     table_elements = [s for s in otatable.S] + [r for r in otatable.R]
+
     ### build a finite automaton
     ## FAStates
     rtw_alphabet = []
@@ -26,7 +20,7 @@ def to_fa(otatable, n):
         value_name_dict[s.whichstate()] = name
         init = False
         accept = False
-        if s.tws == []:
+        if not s.tws:
             init = True
             initstate_name = name
         if s.value[0] == 1:
@@ -40,7 +34,7 @@ def to_fa(otatable, n):
     trans_number = 0
     trans = []
     for r in table_elements:
-        if r.tws == []:
+        if not r.tws:
             continue
         resettimedwords = [tw for tw in r.tws]
         w = resettimedwords[:-1]
@@ -49,7 +43,6 @@ def to_fa(otatable, n):
             rtw_alphabet.append(a)
         source = ""
         target = ""
-        # label = [a]
         for element in table_elements:
             if w == element.tws:
                 source = value_name_dict[element.whichstate()]
@@ -63,7 +56,7 @@ def to_fa(otatable, n):
                     if a not in tran.label:
                         tran.label.append(a)
                     break
-        if need_newtran == True:
+        if need_newtran:
             temp_tran = FATran(trans_number, source, target, [a])
             trans.append(temp_tran)
             trans_number = trans_number + 1
@@ -71,11 +64,9 @@ def to_fa(otatable, n):
     return fa, sink_name
 
 
+# Transform the finite automaton to an one-clock timed automaton as a hypothesis.
 def fa_to_ota(fa, sink_name, sigma, n):
-    """Transform the finite automaton to an one-clock timed automaton as a hypothesis.
-    """
     new_name = "H_" + str(n)
-    # sigma = [action for action in sigma]
     states = [Location(state.name, state.init, state.accept, 'q') for state in fa.states]
     initstate_name = fa.initstate_name
     accept_names = [name for name in fa.accept_names]
@@ -97,7 +88,6 @@ def fa_to_ota(fa, sink_name, sigma, n):
                 timepoints.sort()
                 for rtw in tran.label:
                     index = timepoints.index(rtw.time)
-                    temp_constraint = None
                     ## Consider the float timepoints
                     if index + 1 < len(timepoints):
                         if isinstance(rtw.time, int) and isinstance(timepoints[index + 1], int):
@@ -120,18 +110,17 @@ def fa_to_ota(fa, sink_name, sigma, n):
     return ota
 
 
+# Remove the sink location of the ota.
 def remove_sinklocation(ota):
-    """Remove the sink location of the ota.
-    """
     temp_locations = [location for location in ota.locations if location.sink == False]
     temp_trans = [tran for tran in ota.trans if tran.target != ota.sink_name]
     initstate_name = ""
     accept_names = []
     for location, i in zip(temp_locations, range(0, len(temp_locations))):
         new_name = str(i + 1)
-        if location.init == True:
+        if location.init:
             initstate_name = new_name
-        if location.accept == True:
+        if location.accept:
             accept_names.append(new_name)
         for tran, j in zip(temp_trans, range(0, len(temp_trans))):
             tran.id = j
@@ -141,10 +130,3 @@ def remove_sinklocation(ota):
                 tran.target = new_name
         location.name = new_name
     return OTA(ota.name, ota.sigma, temp_locations, temp_trans, initstate_name, accept_names)
-
-
-def combine_transitions(ota):
-    """Combine the transitions of which have the same source location, the same target location, 
-    the same action, and the same reset.
-    """
-    return 0

@@ -21,8 +21,10 @@ def automata_learning(learning_id, request_data, startTime):
         elif request_data["teacherType"] == "normalTeacher":
             black_normal_pac_learning(learning_id, request_data, startTime, timeout)
     elif request_data["boxType"] == "whiteBox":
+        # 详见 https://github.com/Leslieaj/OTALearning
         if request_data["teacherType"] == "smartTeacher":
             white_smart_learning(learning_id, request_data, startTime, timeout)
+        # 详见 https://github.com/Leslieaj/OTALearningNormal
         elif request_data["teacherType"] == "normalTeacher":
             white_normal_learning(learning_id, request_data, startTime, timeout)
     return True

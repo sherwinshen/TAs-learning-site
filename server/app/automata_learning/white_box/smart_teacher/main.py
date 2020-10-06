@@ -90,7 +90,6 @@ def white_smart_learning(learning_id, request_data, startTime, timeout, debug=Fa
     else:
         print('success')
         target_without_sink = remove_sinklocation(target)
-        # target_without_sink = target
         value = {
             "isFinished": True,
             "result": {
@@ -99,6 +98,7 @@ def white_smart_learning(learning_id, request_data, startTime, timeout, debug=Fa
                 "mqNum": (len(table.S) + len(table.R)) * (len(table.E) + 1),
                 "eqNum": eq_number,
                 "learnedState": len(target_without_sink.locations),
+                "tables explored": t_number
             },
             "model": ota_to_JSON(target_without_sink)
         }

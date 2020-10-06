@@ -6,7 +6,6 @@ from app.automata_learning.white_box.normal_teacher.ota import buildOTA, buildAs
 from app.automata_learning.white_box.normal_teacher.otatable import init_table_normal, add_ctx_normal, make_closed, make_consistent
 from app.automata_learning.white_box.normal_teacher.hypothesis import to_fa, fa_to_ota, remove_sinklocation
 from app.automata_learning.white_box.normal_teacher.equivalence import equivalence_query_normal
-
 from app.data_storage.init import update_cache
 
 
@@ -108,9 +107,7 @@ def white_normal_learning(learning_id, request_data, startTime, timeout, debug=F
             "result": {
                 "result": 'success',
                 "learningTime": end_learning - start,
-                # "mqNum(cache)": len(AA.membership_query),
                 "mqNum": AA.mem_query_num,
-                # "eqNum(cache): len(prev_ctx) + 1,
                 "eqNum": AA.equiv_query_num,
                 "tables explored": t_number,
             },

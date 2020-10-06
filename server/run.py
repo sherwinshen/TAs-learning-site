@@ -89,6 +89,7 @@ def download_result():
     del new_dict["middleModels"]
     return {"code": 0, "data": new_dict}
 
+
 @app.route("/api/getMiddle", methods=["POST"])
 def download_middle():
     request_data = json.loads(request.get_data(as_text=True))

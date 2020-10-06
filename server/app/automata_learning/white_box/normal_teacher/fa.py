@@ -49,8 +49,6 @@ class FA:
         print("transitions: (id, source, target, timedword): ")
         for t in self.trans:
             print(t.id, t.source, t.target, t.label)
-            #t.resettimedword.show()
-            #print
         print("init state: ")
         print(self.initstate_name)
         print("accept states: ")
