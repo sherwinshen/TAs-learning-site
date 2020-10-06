@@ -19,7 +19,7 @@ def validate(learned_system, system, upper_guard):
             sample = sample_generation_main_old_1(learned_system.actions, upper_guard, len(learned_system.states))
             system_res, real_value = new_system.test_DTWs(sample)
             hypothesis_res, value = learned_system.test_DTWs(sample)
-            if (system_res != 1 and hypothesis_res == 1) or (system_res == 1 and hypothesis_res != 1):
+            if system_res != hypothesis_res:
                 failNum += 1
         passingRate = (testNum - failNum) / testNum
     return correct_flag, passingRate

@@ -100,15 +100,41 @@ def is_bad_letterword(letterword, A, B):
     location1, flag1 = letter1.state, letter1.flag
     location2, flag2 = letter2.state, letter2.flag
     if flag1 == "B":
-        if location1 in B.accept_states and location2 not in A.accept_states:
-            return True
+        # if location1 in B.accept_states and location2 not in A.accept_states:
+        #     return True
+        # else:
+        #     return False
+        if location1 in B.accept_states:
+            value_1 = 1
+        elif location1 == B.sink_state:
+            value_1 = -1
         else:
-            return False
+            value_1 = 0
+        if location2 in A.accept_states:
+            value_2 = 1
+        elif location2 == A.sink_state:
+            value_2 = -1
+        else:
+            value_2 = 0
+        return value_1 != value_2
     else:
-        if location2 in B.accept_states and location1 not in A.accept_states:
-            return True
+        # if location2 in B.accept_states and location1 not in A.accept_states:
+        #     return True
+        # else:
+        #     return False
+        if location2 in B.accept_states:
+            value_1 = 1
+        elif location2 == B.sink_state:
+            value_1 = -1
         else:
-            return False
+            value_1 = 0
+        if location1 in A.accept_states:
+            value_2 = 1
+        elif location1 == A.sink_state:
+            value_2 = -1
+        else:
+            value_2 = 0
+        return value_1 != value_2
 
 
 def explored_dominated(explored, w):

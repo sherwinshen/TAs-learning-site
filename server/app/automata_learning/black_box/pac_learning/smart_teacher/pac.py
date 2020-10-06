@@ -34,7 +34,7 @@ def pac_equivalence_query(hypothesis, upper_guard, epsilon, delta, state_num, eq
 def is_counterexample(hypothesis, system, sample):
     system_res, real_value = system.test_DTWs(sample)
     hypothesis_res, value = hypothesis.test_DTWs(sample)
-    return (real_value == 1 and value != 1) or (real_value != 1 and value == 1)
+    return real_value != value
 
 
 def minimize_counterexample(hypothesis, system, ctx):

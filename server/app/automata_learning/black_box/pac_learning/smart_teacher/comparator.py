@@ -15,6 +15,6 @@ def model_compare(hypothesis_pre, hypothesis_now, upper_guard, system):
     system.test_num -= 1
     system.mq_num += 1
     DRTWs_now, value_now = hypothesis_now.test_DTWs(ctx)
-    if (value_real == 1 and value_now != 1) or (value_real != 1 and value_now == 1):
+    if value_real != value_now:
         flag = False
     return flag, ctx
