@@ -1,85 +1,83 @@
 class TimedWord(object):
     def __init__(self, action, time):
-        self.input = action
+        self.action = action
         self.time = time
 
     def __eq__(self, tw):
-        if self.input == tw.input and self.time == tw.time:
+        if self.action == tw.action and self.time == tw.time:
             return True
         else:
             return False
 
     def __lt__(self, other):
-        return (self.time, self.input) < (other.time, other.input)
+        return (self.time, self.action) < (other.time, other.action)
 
     def show(self):
-        return "(" + self.input + "," + str(self.time) + ")"
+        return "(" + self.action + "," + str(self.time) + ")"
 
 
 class ResetTimedWord(object):
-    def __init__(self, action, time, isReset):
-        self.input = action
+    def __init__(self, action, time, reset):
+        self.action = action
         self.time = time
-        self.isReset = isReset
+        self.reset = reset
 
     def __eq__(self, rtw):
-        if self.input == rtw.input and self.time == rtw.time and self.isReset == rtw.isReset:
+        if self.action == rtw.action and self.time == rtw.time and self.reset == rtw.reset:
             return True
         else:
             return False
 
     def show(self):
-        return "(" + self.input + "," + str(self.time) + "," + str(self.isReset) + ")"
+        return "(" + self.action + "," + str(self.time) + "," + str(self.reset) + ")"
 
 
-# —————————————————————————— 方法 ——————————————————————————
-
-# DRTW转为LRTW
+# DRTWs -> LRTWs
 def DRTW_to_LRTW(drtws):
     lrtws = []
-    nowTime = 0
+    now_time = 0
     for drtw in drtws:
-        lrtw = ResetTimedWord(drtw.input, drtw.time + nowTime, drtw.isReset)
-        lrtws.append(lrtw)
-        if lrtw.isReset:
-            nowTime = 0
+        lrtw = ResetTimedWord(drtw.action, drtw.time + now_time, drtw.reset)
+        lrtws.append(ResetTimedWord(drtw.action, drtw.time + now_time, drtw.reset))
+        if lrtw.reset:
+            now_time = 0
         else:
-            nowTime = lrtw.time
+            now_time = lrtw.time
     return lrtws
 
 
-# LRTW转为DTW
+# LRTW -> DTW
 def LRTW_to_DTW(lrtws):
     dtws = []
-    nowTime = 0
+    now_time = 0
     for lrtw in lrtws:
-        dtw = TimedWord(lrtw.input, lrtw.time - nowTime)
+        dtw = TimedWord(lrtw.action, lrtw.time - now_time)
         dtws.append(dtw)
-        if lrtw.isReset:
-            nowTime = 0
+        if lrtw.reset:
+            now_time = 0
         else:
-            nowTime = lrtw.time
+            now_time = lrtw.time
     return dtws
 
 
-# LRTW转为LTW
+# LRTW -> LTW
 def LRTW_to_LTW(lrtws):
     ltws = []
     for lrtw in lrtws:
-        dtw = TimedWord(lrtw.input, lrtw.time)
+        dtw = TimedWord(lrtw.action, lrtw.time)
         ltws.append(dtw)
     return ltws
 
 
-# LRTW转为DRTW
+# LRTW -> DRTW
 def LRTW_to_DRTW(lrtws):
     drtws = []
-    nowTime = 0
+    now_time = 0
     for lrtw in lrtws:
-        drtw = ResetTimedWord(lrtw.input, lrtw.time - nowTime, lrtw.isReset)
+        drtw = ResetTimedWord(lrtw.action, lrtw.time - now_time, lrtw.reset)
         drtws.append(drtw)
-        if lrtw.isReset:
-            nowTime = 0
+        if lrtw.reset:
+            now_time = 0
         else:
-            nowTime = lrtw.time
+            now_time = lrtw.time
     return drtws

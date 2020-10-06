@@ -1,108 +1,105 @@
 import time
 import copy
+from app.data_storage.init import update_cache
+from app.automata_learning.black_box.pac_learning.smart_teacher.system import build_system
 import app.automata_learning.black_box.pac_learning.smart_teacher.obsTable as obsTable
-from app.automata_learning.black_box.pac_learning.smart_teacher.teacher import EQs_new as EQs
-import app.automata_learning.black_box.pac_learning.smart_teacher.comparator.equivWrapper as equivWrapper
-from app.automata_learning.black_box.pac_learning.smart_teacher.hypothesis import structDiscreteOTA, structHypothesisOTA, structSimpleHypothesis, removeSinkState
-from app.automata_learning.black_box.pac_learning.smart_teacher.system import buildSystem
+from app.automata_learning.black_box.pac_learning.smart_teacher.teacher import EQs
+from app.automata_learning.black_box.pac_learning.smart_teacher.hypothesis import struct_discreteOTA, struct_hypothesisOTA, remove_sink_state
+from app.automata_learning.black_box.pac_learning.smart_teacher.comparator import model_compare
+
 from app.automata_learning.black_box.pac_learning.smart_teacher.validate import validate
 
-from app.data_storage.init import update_cache
 
-
-def black_smart_pac_learning(learning_id, request_data, startTime, timeout, debug=False):
+def black_smart_pac_learning(learning_id, request_data, startTime, timeout, debug_flag=False):
     # build target system
-    targetSys = buildSystem(request_data['model'])
+    system = build_system(request_data['model'])
 
-    inputs = request_data["model"]["inputs"]
-    upperGuard = request_data["upperGuard"]
+    actions = request_data["model"]["inputs"]
+    upper_guard = request_data["upperGuard"]
     epsilon = request_data["epsilon"]  # accuracy
     delta = request_data["delta"]  # confidence
-    stateNum = len(request_data["model"]["states"])
+    state_num = len(request_data["model"]["states"])
 
     # pac learning OTA
     startLearning = time.time()
-    if debug:
+    if debug_flag:
         print("********** start learning *************")
 
-    mqNum = 0  # number of MQs
-    eqNum = 0  # number of EQs
-    testNum = 0  # number of tests
-
     ### init Table
-    table, mqNum = obsTable.initTable(inputs, targetSys, mqNum)
-    if debug:
+    table = obsTable.initTable(actions, system)
+    if debug_flag:
         print("***************** init-Table_1 is as follow *******************")
         table.show()
 
     ### learning start
     equivalent = False
-    stableHpy = None  # learned model
-    tNum = 1  # number of table
+    learned_system = None  # learned model
+    table_num = 1  # number of table
 
     while not equivalent and time.time() - startTime <= timeout:
-        prepared = obsTable.isPrepared(table)
+        prepared = table.is_prepared()
         while not prepared:
             # make closed
-            flagClosed, closedMove = obsTable.isClosed(table)
-            if not flagClosed:
-                table, mqNum = obsTable.makeClosed(table, inputs, closedMove, targetSys, mqNum)
-                tNum = tNum + 1
-                if debug:
-                    print("***************** closed-Table_" + str(tNum) + " is as follow *******************")
+            closed_flag, close_move = table.is_closed()
+            if not closed_flag:
+                table = obsTable.make_closed(table, actions, close_move, system)
+
+                table_num = table_num + 1
+                if debug_flag:
+                    print("***************** closed-Table_" + str(table_num) + " is as follow *******************")
                     table.show()
             # make consistent
-            flagConsistent, consistentAdd = obsTable.isConsistent(table)
-            if not flagConsistent:
-                table, mqNum = obsTable.makeConsistent(table, consistentAdd, targetSys, mqNum)
-                tNum = tNum + 1
-                if debug:
-                    print("***************** consistent-Table_" + str(tNum) + " is as follow *******************")
+            consistent_flag, consistent_add = table.is_consistent()
+            if not consistent_flag:
+                consistent_flag, consistent_add = table.is_consistent()
+                table = obsTable.make_consistent(table, consistent_add, system)
+                table_num = table_num + 1
+                if debug_flag:
+                    print("***************** consistent-Table_" + str(table_num) + " is as follow *******************")
                     table.show()
-            prepared = obsTable.isPrepared(table)
+            prepared = table.is_prepared()
 
         ### build hypothesis
         # Discrete OTA
-        discreteOTA = structDiscreteOTA(table, inputs)
-        if debug:
-            print("***************** discreteOTA_" + str(eqNum + 1) + " is as follow. *******************")
-            discreteOTA.showDiscreteOTA()
+        discreteOTA = struct_discreteOTA(table, actions)
+        if debug_flag:
+            print("***************** discreteOTA_" + str(system.eq_num + 1) + " is as follow. *******************")
+            discreteOTA.show_discreteOTA()
         # Hypothesis OTA
-        hypothesisOTA = structHypothesisOTA(discreteOTA)
-        if debug:
-            print("***************** Hypothesis_" + str(eqNum + 1) + " is as follow. *******************")
-            hypothesisOTA.showOTA()
+        hypothesisOTA = struct_hypothesisOTA(discreteOTA)
+        if debug_flag:
+            print("***************** Hypothesis_" + str(system.eq_num + 1) + " is as follow. *******************")
+            hypothesisOTA.show_OTA()
 
         # 添加到 middleModels
-        addMiddleModels(learning_id, removeSinkState(structSimpleHypothesis(copy.deepcopy(hypothesisOTA))))
+        addMiddleModels(learning_id, remove_sink_state(copy.deepcopy(hypothesisOTA).build_simple_hypothesis()))
 
         ### comparator
-        flag, ctx, mqNum = equivWrapper.hpyCompare(stableHpy, hypothesisOTA, upperGuard, targetSys, mqNum)
-        if flag:
+        ctx_flag, ctx = model_compare(learned_system, hypothesisOTA, upper_guard, system)
+        if ctx_flag:
             ### EQs
-            equivalent, ctx, testNum = EQs(hypothesisOTA, upperGuard, epsilon, delta, stateNum, targetSys, eqNum, testNum)
-            eqNum = eqNum + 1
-            stableHpy = copy.deepcopy(hypothesisOTA)
+            equivalent, ctx = EQs(hypothesisOTA, upper_guard, epsilon, delta, state_num, system)
+            learned_system = copy.deepcopy(hypothesisOTA)
         else:
-            if debug:
+            if debug_flag:
                 print("Comparator found a counterexample!!!")
             equivalent = False
 
         if not equivalent:
             # show ctx
-            if debug:
+            if debug_flag:
                 print("***************** counterexample is as follow. *******************")
-                print([drtw.show() for drtw in ctx])
+                print([dtw.show() for dtw in ctx])
             # deal with ctx
-            table, mqNum = obsTable.dealCtx(table, ctx, targetSys, mqNum)
-            tNum = tNum + 1
-            if debug:
-                print("***************** New-Table" + str(tNum) + " is as follow *******************")
+            table = obsTable.deal_ctx(table, ctx, system)
+            table_num = table_num + 1
+            if debug_flag:
+                print("***************** New-Table" + str(table_num) + " is as follow *******************")
                 table.show()
 
     endLearning = time.time()
 
-    if stableHpy is None or not equivalent:
+    if learned_system is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {
@@ -112,23 +109,22 @@ def black_smart_pac_learning(learning_id, request_data, startTime, timeout, debu
         }
     else:
         # verify model quality
-        correctFlag, passingRate = validate(stableHpy, targetSys, upperGuard, stateNum, eqNum, delta, epsilon)
-        learnedSys = structSimpleHypothesis(stableHpy)
-        learnedSys = removeSinkState(learnedSys)
+        correct_flag, passing_rate = validate(learned_system, system, upper_guard)
+        learned_system = remove_sink_state(learned_system.build_simple_hypothesis())
         print('success')
         value = {
             "isFinished": True,
             "result": {
                 "result": 'success',
                 "learningTime": endLearning - startLearning,
-                "mqNum": mqNum,
-                "eqNum": eqNum,
-                "testNum": testNum,
-                "accuracy": 1 - epsilon,
-                "passingRate": passingRate,
-                "correct": str(correctFlag)
+                "mqNum": system.mq_num,
+                "eqNum": system.eq_num,
+                "testNum": system.test_num,
+                "tables explored": table_num,
+                "passingRate": passing_rate,
+                "correct": str(correct_flag)
             },
-            "model": ota_to_JSON(learnedSys)
+            "model": ota_to_JSON(learned_system)
         }
     update_cache(learning_id, value)
     return True
@@ -137,12 +133,12 @@ def black_smart_pac_learning(learning_id, request_data, startTime, timeout, debu
 def ota_to_JSON(ota):
     trans = {}
     for i in range(len(ota.trans)):
-        trans[i] = [ota.trans[i].source, ota.trans[i].input, ota.trans[i].showGuards(), ota.trans[i].isReset, ota.trans[i].target]
+        trans[i] = [ota.trans[i].source, ota.trans[i].action, ota.trans[i].show_guards(), ota.trans[i].reset, ota.trans[i].target]
     value = {
         "states": ota.states,
-        "inputs": ota.inputs,
-        "initState": ota.initState,
-        "acceptStates": ota.acceptStates,
+        "inputs": ota.actions,
+        "initState": ota.init_state,
+        "acceptStates": ota.accept_states,
         "trans": trans
     }
     return value

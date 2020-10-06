@@ -57,6 +57,30 @@ class BracketNum:
             else:
                 return False
 
+    def __gt__(self, bn):
+        if self.value == '+':
+            if bn.value == '+':
+                return False
+            else:
+                return True
+        if bn.value == '+':
+            return False
+        if float(self.value) > float(bn.value):
+            return True
+        elif float(self.value) < float(bn.value):
+            return False
+        else:
+            if self.bracket > bn.bracket:
+                return True
+            else:
+                return False
+
+    def __ge__(self, bn):
+        return not self.__lt__(bn)
+
+    def __le__(self, bn):
+        return not self.__gt__(bn)
+
     def getBN(self):
         if self.bracket == Bracket.LC:
             return '[' + self.value
@@ -96,33 +120,9 @@ class Guard:
         self.max_value = max_type[:-1].strip()
         self.max_bn = BracketNum(self.max_value, max_bn_bracket)
 
-    def isEmpty(self):
-        if self.max_bn < self.min_bn:
+    def __eq__(self, guard):
+        if self.min_bn == guard.min_bn and self.max_bn == guard.max_bn:
             return True
-        else:
-            return False
-
-    def __eq__(self, constraint):
-        if self.min_value == constraint.min_value and self.closed_min == constraint.closed_min and self.max_value == constraint.max_value and self.closed_max == constraint.closed_max:
-            return True
-        else:
-            return False
-
-    def isInInterval(self, num):
-        if num < self.get_min():
-            return False
-        elif num == self.get_min():
-            if self.closed_min:
-                return True
-            else:
-                return False
-        elif self.get_min() < num < self.get_max():
-            return True
-        elif num == self.get_max():
-            if self.closed_max:
-                return True
-            else:
-                return False
         else:
             return False
 
@@ -141,5 +141,86 @@ class Guard:
     def get_closed_max(self):
         return self.closed_max
 
+    def __hash__(self):
+        return hash(("CONSTRAINT", self.get_min(), self.closed_min, self.get_max(), self.closed_max))
+
+    def is_point(self):
+        if self.min_value == '+' or self.max_value == '+':
+            return False
+        if self.get_min() == self.get_max() and self.closed_min and self.closed_max:
+            return True
+        else:
+            return False
+
+    def is_subset(self, c2):
+        min_bn1 = self.min_bn
+        max_bn1 = self.max_bn
+        min_bn2 = c2.min_bn
+        max_bn2 = c2.max_bn
+        if min_bn1 >= min_bn2 and max_bn1 <= max_bn2:
+            return True
+        else:
+            return False
+
+    def is_in_interval(self, num):
+        if num < self.get_min():
+            return False
+        elif num == self.get_min():
+            if self.closed_min:
+                return True
+            else:
+                return False
+        elif self.get_min() < num < self.get_max():
+            return True
+        elif num == self.get_max():
+            if self.closed_max:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def is_empty(self):
+        if self.max_bn < self.min_bn:
+            return True
+        else:
+            return False
+
     def show(self):
         return self.guard
+
+
+# Merge guards
+def simple_guards(guards):
+    if len(guards) == 1 or len(guards) == 0:
+        return guards
+    else:
+        sorted_guards = sort_guards(guards)
+        result = []
+        temp_guard = sorted_guards[0]
+        for i in range(1, len(sorted_guards)):
+            first_right = temp_guard.max_bn
+            second_left = sorted_guards[i].min_bn
+            if float(first_right.value) == float(second_left.value):
+                if (first_right.bracket == 1 and second_left.bracket == 2) or (first_right.bracket == 3 and second_left.bracket == 4):
+                    left = temp_guard.guard.split(',')[0]
+                    right = sorted_guards[i].guard.split(',')[1]
+                    guard = Guard(left + ',' + right)
+                    temp_guard = guard
+                elif first_right.bracket == 1 and second_left.bracket == 4:
+                    result.append(temp_guard)
+                    temp_guard = sorted_guards[i]
+            else:
+                result.append(temp_guard)
+                temp_guard = sorted_guards[i]
+        result.append(temp_guard)
+        return result
+
+
+# Sort guards
+def sort_guards(guards):
+    for i in range(len(guards) - 1):
+        for j in range(len(guards) - i - 1):
+            if guards[j].max_bn > guards[j + 1].max_bn:
+                guards[j], guards[j + 1] = guards[j + 1], guards[j]
+    return guards

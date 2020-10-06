@@ -16,6 +16,7 @@ from app.automata_learning.black_box.pac_learning.normal_teacher.main import bla
 def automata_learning(learning_id, request_data, startTime):
     timeout = request_data['timeout'] * 60
     if request_data["boxType"] == "blackBox":
+        # 详见 https://github.com/MrEnvision/pac_learn_DOTAs
         if request_data["teacherType"] == "smartTeacher":
             black_smart_pac_learning(learning_id, request_data, startTime, timeout)
         elif request_data["teacherType"] == "normalTeacher":
