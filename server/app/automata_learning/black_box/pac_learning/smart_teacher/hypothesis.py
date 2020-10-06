@@ -269,7 +269,6 @@ def remove_sink_state(hypothesis):
     for tran in hypothesis.trans:
         if tran.source != hypothesis.sink_state and tran.target != hypothesis.sink_state:
             trans.append(tran)
-    print(states)
     return OTA(actions, states, trans, init_state, accept_states, hypothesis.sink_state)
 
 
