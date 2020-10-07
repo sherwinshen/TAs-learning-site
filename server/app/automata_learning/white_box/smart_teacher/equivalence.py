@@ -341,15 +341,41 @@ def is_bad_letterword(letterword, A, B):
     location1 = letter1.location
     location2 = letter2.location
     if location1.flag == B.locations[0].flag:
-        if location1.name in B.accept_names and location2.name not in A.accept_names:
-            return True
+        if location1.name in B.accept_names:
+            value1 = 1
+        elif location1.name == B.sink_name:
+            value1 = -1
         else:
-            return False
+            value1 = 0
+        if location2.name in A.accept_names:
+            value2 = 1
+        elif location2.name == A.sink_name:
+            value2 = -1
+        else:
+            value2 = 0
+        return value1 != value2
+        # if location1.name in B.accept_names and location2.name not in A.accept_names:
+        #     return True
+        # else:
+        #     return False
     else:
-        if location2.name in B.accept_names and location1.name not in A.accept_names:
-            return True
+        if location1.name in A.accept_names:
+            value1 = 1
+        elif location1.name == A.sink_name:
+            value1 = -1
         else:
-            return False
+            value1 = 0
+        if location2.name in B.accept_names:
+            value2 = 1
+        elif location2.name == B.sink_name:
+            value2 = -1
+        else:
+            value2 = 0
+        return value1 != value2
+        # if location2.name in B.accept_names and location1.name not in A.accept_names:
+        #     return True
+        # else:
+        #     return False
 
 
 def explored_dominated(explored, w):
