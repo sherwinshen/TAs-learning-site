@@ -1,148 +1,299 @@
-from app.automata_learning.black_box.pac_learning.normal_teacher.fa import FAState, FATran, FA
-from app.automata_learning.black_box.pac_learning.normal_teacher.interval import Constraint
-from app.automata_learning.black_box.pac_learning.normal_teacher.ota import Location, OTA, OTATran
+import math
+from app.automata_learning.black_box.pac_learning.normal_teacher.timeInterval import Guard, simple_guards
+from app.automata_learning.black_box.pac_learning.normal_teacher.timedWord import TimedWord, ResetTimedWord
 
 
-def to_fa(otatable, n):
-    """
-        Given an ota table, build a finite automaton.
-    """
-    ### First, need to transform the resettimedwords of the elements in S_U_R  to clock valuation timedwords with reset informations.
-    table_elements = [s for s in otatable.S] + [r for r in otatable.R]
+class OTA(object):
+    def __init__(self, actions, states, trans, init_state, accept_states, sink_state):
+        self.actions = actions
+        self.states = states
+        self.trans = trans
+        self.init_state = init_state
+        self.accept_states = accept_states
+        self.sink_state = sink_state
 
-    ### build a finite automaton
-    ## FAStates
-    rtw_alphabet = []
-    states = []
-    initstate_name = ""
-    accept_names = []
-    value_name_dict = {}
-    sink_name = ""
-    for s, i in zip(otatable.S, range(1, len(otatable.S) + 1)):
-        name = str(i)
-        value_name_dict[s.whichstate()] = name
-        init = False
-        accept = False
-        if not s.tws:
-            init = True
-            initstate_name = name
-        if s.value[0] == 1:
-            accept = True
-            accept_names.append(name)
-        if s.value[0] == -1:
-            sink_name = name
-        temp_state = FAState(name, init, accept)
-        states.append(temp_state)
-    ## FATrans
-    trans_number = 0
-    trans = []
-    for r in table_elements:
-        if not r.tws:
-            continue
-        resettimedwords = [tw for tw in r.tws]
-        w = resettimedwords[:-1]
-        a = resettimedwords[len(resettimedwords) - 1]
-        if a not in rtw_alphabet:
-            rtw_alphabet.append(a)
-        source = ""
-        target = ""
-        for element in table_elements:
-            if w == element.tws:
-                source = value_name_dict[element.whichstate()]
-            if resettimedwords == element.tws:
-                target = value_name_dict[element.whichstate()]
-        need_newtran = True
-        for tran in trans:
-            if source == tran.source and target == tran.target:
-                if a.action == tran.label[0].action and a.reset == tran.label[0].reset:
-                    need_newtran = False
-                    if a not in tran.label:
-                        tran.label.append(a)
-                    break
-        if need_newtran:
-            temp_tran = FATran(trans_number, source, target, [a])
-            trans.append(temp_tran)
-            trans_number = trans_number + 1
-    fa = FA("FA_" + str(n), rtw_alphabet, states, trans, initstate_name, accept_names)
-    for tran in fa.trans:
-        action = tran.label[0].action
-        reset = tran.label[0].reset
-        times = [tw.time for tw in tran.label]
-        for tr in fa.trans:
-            if tran.source == tr.source and tran.target == tr.target and action == tr.label[0].action and reset != tr.label[0].reset:
-                for time in times:
-                    if time in [la.time for la in tr.label]:
-                        return False, None, ""
-    return True, fa, sink_name
+    def show_discreteOTA(self):
+        print("Actions: " + str(self.actions))
+        print("States: " + str(self.states))
+        print("InitState: {}".format(self.init_state))
+        print("AcceptStates: {}".format(self.accept_states))
+        print("SinkState: {}".format(self.sink_state))
+        print("Transitions: ")
+        for t in self.trans:
+            print(' ' + str(t.tran_id), 'S_' + str(t.source), str(t.action), str(t.time_point), str(t.reset), 'S_' + str(t.target), end="\n")
 
+    def show_OTA(self):
+        print("Actions: " + str(self.actions))
+        print("States: " + str(self.states))
+        print("InitState: {}".format(self.init_state))
+        print("AcceptStates: {}".format(self.accept_states))
+        print("SinkState: {}".format(self.sink_state))
+        print("Transitions: ")
+        for t in self.trans:
+            print("  " + str(t.tran_id), 'S_' + str(t.source), str(t.action), t.show_guards(), str(t.reset), 'S_' + str(t.target), end="\n")
 
-def fa_to_ota(fa, sink_name, sigma, n):
-    """
-        Transform the finite automaton to an one-clock timed automaton as a hypothesis.
-    """
-    new_name = "H_" + str(n)
-    states = [Location(state.name, state.init, state.accept, 'q') for state in fa.states]
-    initstate_name = fa.initstate_name
-    accept_names = [name for name in fa.accept_names]
-    for l in states:
-        if l.name == sink_name:
-            l.sink = True
-    ### generate the transitions
-    trans = []
-    for s in fa.states:
-        s_dict = {}
-        for key in sigma:
-            s_dict[key] = []
-        for tran in fa.trans:
-            if tran.source == s.name:
-                s_dict[tran.label[0].action].extend([rtw.time for rtw in tran.label])
-        for tran in fa.trans:
-            if tran.source == s.name:
-                timepoints = [time for time in s_dict[tran.label[0].action]]
-                timepoints.sort()
-                for rtw in tran.label:
-                    index = timepoints.index(rtw.time)
-                    ## Consider the float timepoints
-                    if index + 1 < len(timepoints):
-                        if isinstance(rtw.time, int) and isinstance(timepoints[index + 1], int):
-                            temp_constraint = Constraint("[" + str(rtw.time) + "," + str(timepoints[index + 1]) + ")")
-                        elif isinstance(rtw.time, int) and not isinstance(timepoints[index + 1], int):
-                            temp_constraint = Constraint("[" + str(rtw.time) + "," + str(int(timepoints[index + 1])) + "]")
-                        elif not isinstance(rtw.time, int) and isinstance(timepoints[index + 1], int):
-                            temp_constraint = Constraint("(" + str(int(rtw.time)) + "," + str(timepoints[index + 1]) + ")")
+    def __lt__(self, other):
+        return len(self.states) < len(other.states)
+
+    # Perform tests(DTWs) on the hypothesis(smart teacher), return value and DRTWs(full)
+    def test_DTWs(self, DTWs):
+        DRTWs = []
+        now_time = 0
+        cur_state = self.init_state
+        for dtw in DTWs:
+            if cur_state == self.sink_state:
+                DRTWs.append(ResetTimedWord(dtw.action, dtw.time, True))
+            else:
+                time = dtw.time + now_time
+                new_LTW = TimedWord(dtw.action, time)
+                for tran in self.trans:
+                    if tran.source == cur_state and tran.is_passing_tran(new_LTW):
+                        cur_state = tran.target
+                        if tran.reset:
+                            now_time = 0
+                            reset = True
                         else:
-                            temp_constraint = Constraint("(" + str(int(rtw.time)) + "," + str(int(timepoints[index + 1])) + "]")
+                            now_time = time
+                            reset = False
+                        DRTWs.append(ResetTimedWord(dtw.action, dtw.time, reset))
+                        break
+        if cur_state in self.accept_states:
+            value = 1
+        elif cur_state == self.sink_state:
+            value = -1
+        else:
+            value = 0
+        return DRTWs, value
+
+    # Perform tests(DTWs) on the hypothesis(normal teacher), return value
+    def test_DTWs_normal(self, DTWs):
+        now_time = 0
+        cur_state = self.init_state
+        for dtw in DTWs:
+            time = dtw.time + now_time
+            new_LTW = TimedWord(dtw.action, time)
+            for tran in self.trans:
+                if tran.source == cur_state and tran.is_passing_tran(new_LTW):
+                    cur_state = tran.target
+                    if tran.reset:
+                        now_time = 0
                     else:
-                        if isinstance(rtw.time, int):
-                            temp_constraint = Constraint("[" + str(rtw.time) + "," + "+" + ")")
-                        else:
-                            temp_constraint = Constraint("(" + str(int(rtw.time)) + "," + "+" + ")")
-                    temp_tran = OTATran(len(trans), tran.source, tran.label[0].action, [temp_constraint], rtw.reset, tran.target, 'q')
-                    trans.append(temp_tran)
-    ota = OTA(new_name, sigma, states, trans, initstate_name, accept_names)
-    ota.sink_name = sink_name
-    return ota
+                        now_time = time
+                    if cur_state == self.sink_state:
+                        return -1
+                    break
+        if cur_state in self.accept_states:
+            value = 1
+        else:
+            value = 0
+        return value
+
+    # build simple hypothesis - merge guards
+    def build_simple_hypothesis(self):
+        actions = self.actions
+        states = self.states
+        init_state = self.init_state
+        accept_states = self.accept_states
+        sink_state = self.sink_state
+        trans = []
+        tran_num = 0
+        for s in self.states:
+            for t in self.states:
+                for action in actions:
+                    for reset in [True, False]:
+                        temp = []
+                        for tran in self.trans:
+                            if tran.source == s and tran.action == action and tran.target == t and tran.reset == reset:
+                                temp.append(tran)
+                        if temp:
+                            guards = []
+                            for i in temp:
+                                guards += i.guards
+                            guards = simple_guards(guards)
+                            trans.append(OTATran(tran_num, s, action, guards, reset, t))
+                            tran_num += 1
+        return OTA(actions, states, trans, init_state, accept_states, sink_state)
+
+    # Get the max time value constant appearing in OTA.
+    def max_time_value(self):
+        max_time_value = 0
+        for tran in self.trans:
+            for c in tran.guards:
+                if c.max_value == '+':
+                    temp_max_value = float(c.min_value) + 1
+                else:
+                    temp_max_value = float(c.max_value)
+                if max_time_value < temp_max_value:
+                    max_time_value = temp_max_value
+        return max_time_value
 
 
-def remove_sinklocation(ota):
-    """
-        Remove the sink location of the ota.
-    """
-    temp_locations = [location for location in ota.locations if location.sink == False]
-    temp_trans = [tran for tran in ota.trans if tran.target != ota.sink_name]
-    initstate_name = ""
-    accept_names = []
-    for location, i in zip(temp_locations, range(0, len(temp_locations))):
-        new_name = str(i + 1)
-        if location.init:
-            initstate_name = new_name
-        if location.accept:
-            accept_names.append(new_name)
-        for tran, j in zip(temp_trans, range(0, len(temp_trans))):
-            tran.id = j
-            if location.name == tran.source:
-                tran.source = new_name
-            if location.name == tran.target:
-                tran.target = new_name
-        location.name = new_name
-    return OTA(ota.name, ota.sigma, temp_locations, temp_trans, initstate_name, accept_names)
+class DiscreteOTATran(object):
+    def __init__(self, tran_id, source, action, time_point, reset, target):
+        self.tran_id = tran_id
+        self.source = source
+        self.action = action
+        self.time_point = time_point
+        self.reset = reset
+        self.target = target
+
+
+class OTATran(object):
+    def __init__(self, tran_id, source, action, guards, reset, target):
+        self.tran_id = tran_id
+        self.source = source
+        self.action = action
+        self.guards = guards
+        self.reset = reset
+        self.target = target
+
+    def is_passing_tran(self, ltw):
+        if ltw.action == self.action:
+            for guard in self.guards:
+                if guard.is_in_interval(ltw.time):
+                    return True
+        else:
+            return False
+        return False
+
+    def show_guards(self):
+        temp = self.guards[0].show()
+        for i in range(1, len(self.guards)):
+            temp = temp + 'U' + self.guards[i].show()
+        return temp
+
+
+def struct_discreteOTA(table, actions):
+    states = []
+    trans = []
+    init_state = ''
+    accept_states = []
+    sink_state = ''
+    # deal with states
+    values_name_dict = {}
+    for s, i in zip(table.S, range(0, len(table.S))):
+        state_name = i
+        values_name_dict[str(s.values)] = state_name
+        states.append(state_name)
+        if not s.LRTWs:
+            init_state = state_name
+        if s.values[0] == 1:
+            accept_states.append(state_name)
+        if s.values[0] == -1:
+            sink_state = state_name
+    # deal with trans
+    trans_num = 0
+    table_elements = [s for s in table.S] + [r for r in table.R]
+    for r in table_elements:
+        source = None
+        target = None
+        if not r.LRTWs:
+            continue
+        timedWords = [lrtw for lrtw in r.LRTWs]
+        w = timedWords[:-1]
+        a = timedWords[len(timedWords) - 1]
+        for element in table_elements:
+            if is_equal(w, element.LRTWs):
+                source = values_name_dict[str(element.values)]
+            if is_equal(timedWords, element.LRTWs):
+                target = values_name_dict[str(element.values)]
+        # 确认迁移 action
+        action = a.action
+        time_point = a.time
+        reset = a.reset
+        # 添加新迁移还是添加时间点
+        need_new_tran_flag = True
+        for tran in trans:
+            if source == tran.source and action == tran.action and target == tran.target:
+                if time_point == tran.time_point:
+                    need_new_tran_flag = False
+                    break
+        if need_new_tran_flag:
+            temp_tran = DiscreteOTATran(trans_num, source, action, time_point, reset, target)
+            trans.append(temp_tran)
+            trans_num = trans_num + 1
+    return OTA(actions, states, trans, init_state, accept_states, sink_state)
+
+
+def struct_hypothesisOTA(discreteOTA):
+    trans = []
+    for s in discreteOTA.states:
+        s_dict = {}
+        for key in discreteOTA.actions:
+            s_dict[key] = [0]
+        for tran in discreteOTA.trans:
+            if tran.source == s:
+                for action in discreteOTA.actions:
+                    if tran.action == action:
+                        temp_list = s_dict[action]
+                        if tran.time_point not in temp_list:
+                            temp_list.append(tran.time_point)
+                        s_dict[action] = temp_list
+        for value in s_dict.values():
+            value.sort()
+        for tran in discreteOTA.trans:
+            if tran.source == s:
+                time_points = s_dict[tran.action]
+                guards = []
+                tw = tran.time_point
+                index = time_points.index(tw)
+                if index + 1 < len(time_points):
+                    if is_int(tw) and is_int(time_points[index + 1]):
+                        tempGuard = Guard("[" + str(tw) + "," + str(time_points[index + 1]) + ")")
+                    elif is_int(tw) and not is_int(time_points[index + 1]):
+                        tempGuard = Guard("[" + str(tw) + "," + str(math.modf(time_points[index + 1])[1]) + "]")
+                    elif not is_int(tw) and is_int(time_points[index + 1]):
+                        tempGuard = Guard("(" + str(math.modf(tw)[1]) + "," + str(time_points[index + 1]) + ")")
+                    else:
+                        tempGuard = Guard("(" + str(math.modf(tw)[1]) + "," + str(math.modf(time_points[index + 1])[1]) + "]")
+                    guards.append(tempGuard)
+                else:
+                    if is_int(tw):
+                        tempGuard = Guard("[" + str(tw) + ",+)")
+                    else:
+                        tempGuard = Guard("(" + str(math.modf(tw)[1]) + ",+)")
+                    guards.append(tempGuard)
+                for guard in guards:
+                    trans.append(OTATran(tran.tran_id, tran.source, tran.action, [guard], tran.reset, tran.target))
+    return OTA(discreteOTA.actions, discreteOTA.states, trans, discreteOTA.init_state, discreteOTA.accept_states, discreteOTA.sink_state)
+
+
+# 去除sink状态的迁移
+def remove_sink_state(hypothesis):
+    actions = hypothesis.actions
+    states = hypothesis.states
+    init_state = hypothesis.init_state
+    accept_states = hypothesis.accept_states
+    states.remove(hypothesis.sink_state)
+    trans = []
+    for tran in hypothesis.trans:
+        if tran.source != hypothesis.sink_state and tran.target != hypothesis.sink_state:
+            trans.append(tran)
+    return OTA(actions, states, trans, init_state, accept_states, hypothesis.sink_state)
+
+
+# --------------------------------- auxiliary function ---------------------------------
+
+# Determine whether two LRTWs are the same
+def is_equal(LRTWs1, LRTWs2):
+    if len(LRTWs1) != len(LRTWs2):
+        return False
+    else:
+        flag = True
+        for i in range(len(LRTWs1)):
+            if LRTWs1[i] != LRTWs2[i]:
+                flag = False
+                break
+        if flag:
+            return True
+        else:
+            return False
+
+
+# instance of Int?
+def is_int(num):
+    x, y = math.modf(num)
+    if x == 0:
+        return True
+    else:
+        return False

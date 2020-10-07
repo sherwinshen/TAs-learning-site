@@ -19,6 +19,7 @@ def automata_learning(learning_id, request_data, startTime):
         # 详见 https://github.com/MrEnvision/pac_learn_DOTAs
         if request_data["teacherType"] == "smartTeacher":
             black_smart_pac_learning(learning_id, request_data, startTime, timeout)
+        # 详见 https://github.com/MrEnvision/pac_learn_DOTAs
         elif request_data["teacherType"] == "normalTeacher":
             black_normal_pac_learning(learning_id, request_data, startTime, timeout)
     elif request_data["boxType"] == "whiteBox":
