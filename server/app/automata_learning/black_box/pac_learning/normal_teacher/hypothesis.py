@@ -207,6 +207,8 @@ def struct_discreteOTA(table, actions):
             if source == tran.source and action == tran.action and target == tran.target:
                 if time_point == tran.time_point:
                     need_new_tran_flag = False
+                    if reset != tran.reset:
+                        return None
                     break
         if need_new_tran_flag:
             temp_tran = DiscreteOTATran(trans_num, source, action, time_point, reset, target)

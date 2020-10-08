@@ -76,6 +76,8 @@ def black_normal_pac_learning(learning_id, request_data, startTime, timeout, deb
 
         # If prepared, check conversion to FA
         discreteOTA = struct_discreteOTA(current_table, actions)
+        if discreteOTA is None:
+            continue
         if debug_flag:
             print("***************** discreteOTA_" + str(system.eq_num + 1) + " is as follow. *******************")
             discreteOTA.show_discreteOTA()
