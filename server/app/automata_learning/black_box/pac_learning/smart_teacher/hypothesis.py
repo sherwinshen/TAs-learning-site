@@ -260,6 +260,8 @@ def struct_hypothesisOTA(discreteOTA):
 
 # 去除sink状态的迁移
 def remove_sink_state(hypothesis):
+    if hypothesis.sink_state == '':
+        return hypothesis
     actions = hypothesis.actions
     states = hypothesis.states
     init_state = hypothesis.init_state
