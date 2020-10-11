@@ -173,7 +173,7 @@ def struct_discreteOTA(table, actions):
     values_name_dict = {}
     for s, i in zip(table.S, range(0, len(table.S))):
         state_name = i
-        values_name_dict[str(s.values)] = state_name
+        values_name_dict[str(s.values) + str(s.suffixes_resets)] = state_name
         states.append(state_name)
         if not s.LRTWs:
             init_state = state_name
@@ -194,19 +194,21 @@ def struct_discreteOTA(table, actions):
         a = timedWords[len(timedWords) - 1]
         for element in table_elements:
             if is_equal(w, element.LRTWs):
-                source = values_name_dict[str(element.values)]
+                source = values_name_dict[str(element.values) + str(element.suffixes_resets)]
             if is_equal(timedWords, element.LRTWs):
-                target = values_name_dict[str(element.values)]
+                target = values_name_dict[str(element.values) + str(element.suffixes_resets)]
         # 确认迁移 action
         action = a.action
         time_point = a.time
         reset = a.reset
-        # 添加新迁移还是添加时间点
+        # 是否需要添加新迁移
         need_new_tran_flag = True
         for tran in trans:
             if source == tran.source and action == tran.action and target == tran.target:
                 if time_point == tran.time_point:
                     need_new_tran_flag = False
+                    if reset != tran.reset:
+                        return None
                     break
         if need_new_tran_flag:
             temp_tran = DiscreteOTATran(trans_num, source, action, time_point, reset, target)

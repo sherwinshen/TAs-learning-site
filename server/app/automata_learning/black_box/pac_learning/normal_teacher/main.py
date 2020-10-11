@@ -8,6 +8,7 @@ from app.automata_learning.black_box.pac_learning.normal_teacher.hypothesis impo
 from app.automata_learning.black_box.pac_learning.normal_teacher.teacher import EQs
 from app.automata_learning.black_box.pac_learning.normal_teacher.pac import minimize_counterexample_normal
 from app.data_storage.init import update_cache
+from app.automata_learning.black_box.pac_learning.normal_teacher.validate import validate
 
 
 def black_normal_pac_learning(learning_id, request_data, startTime, timeout, debug_flag=False):
@@ -45,8 +46,8 @@ def black_normal_pac_learning(learning_id, request_data, startTime, timeout, deb
         depth, current_table = need_to_explore.get()
         t_number = t_number + 1
 
-        print("Table %s: current %s has parent-%s by %s" % (t_number, current_table.table_id, current_table.parent, current_table.reason))
         if debug_flag:
+            print("Table %s: current %s has parent-%s by %s" % (t_number, current_table.table_id, current_table.parent, current_table.reason))
             current_table.show()
             print("--------------------------------------------------")
 
@@ -130,6 +131,8 @@ def black_normal_pac_learning(learning_id, request_data, startTime, timeout, deb
         }
     else:
         print('success')
+        # verify model quality
+        correct_flag, passing_rate = validate(target, system, upper_guard)
         target_without_sink = remove_sink_state(target)
         value = {
             "isFinished": True,
@@ -140,6 +143,8 @@ def black_normal_pac_learning(learning_id, request_data, startTime, timeout, deb
                 "eqNum": system.eq_num,
                 "testNum": system.test_num,
                 "tables explored": t_number,
+                "passingRate": passing_rate,
+                "correct": str(correct_flag)
             },
             "model": ota_to_JSON(target_without_sink)
         }

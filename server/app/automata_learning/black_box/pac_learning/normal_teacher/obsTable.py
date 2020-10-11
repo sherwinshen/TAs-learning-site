@@ -1,6 +1,6 @@
 from copy import deepcopy
 from itertools import product
-from app.automata_learning.black_box.pac_learning.normal_teacher.timedWord import TimedWord, ResetTimedWord, LRTW_to_DTW, DRTW_to_LRTW, LRTW_to_LTW
+from app.automata_learning.black_box.pac_learning.normal_teacher.timedWord import TimedWord, ResetTimedWord, LRTW_to_DTW, DRTW_to_LRTW, LRTW_to_LTW, LRTW_to_DRTW
 
 table_id = 0
 
@@ -37,7 +37,7 @@ class ObsTable(object):
         for r in self.R:
             flag = False
             for s in self.S:
-                if r.values == s.values:
+                if r.values == s.values and r.suffixes_resets == s.suffixes_resets:
                     flag = True
                     break
             if not flag:
@@ -60,7 +60,7 @@ class ObsTable(object):
         table_element = [s for s in self.S] + [r for r in self.R]
         for i in range(0, len(table_element) - 1):
             for j in range(i + 1, len(table_element)):
-                if table_element[i].values == table_element[j].values:
+                if table_element[i].values == table_element[j].values and table_element[i].suffixes_resets == table_element[j].suffixes_resets:
                     temp_elements1 = []
                     temp_elements2 = []
                     for element in table_element:
@@ -74,11 +74,20 @@ class ObsTable(object):
                             newLRTWs2 = delete_prefix(e2.LRTWs, table_element[j].LRTWs)
                             if len(newLRTWs1) == len(newLRTWs2) == 1:
                                 if newLRTWs1[0].action == newLRTWs2[0].action and newLRTWs1[0].time == newLRTWs2[0].time:
-                                    if e1.values != e2.values:
+                                    if newLRTWs1[0].reset != newLRTWs2[0].reset:
+                                        flag = False
+                                        e_index = 0
+                                        prefix_LTWs = [TimedWord(newLRTWs1[0].action, newLRTWs1[0].time)]
+                                        reset_i = [newLRTWs1[0].reset]
+                                        reset_j = [newLRTWs2[0].reset]
+                                        index_i = i
+                                        index_j = j
+                                        return flag, prefix_LTWs, e_index, reset_i, reset_j, index_i, index_j
+                                    if e1.values != e2.values or e1.suffixes_resets != e2.suffixes_resets:
                                         flag = False
                                         prefix_LTWs = [TimedWord(newLRTWs1[0].action, newLRTWs1[0].time)]
                                         for k in range(0, len(e1.values)):
-                                            if e1.values[k] != e2.values[k]:
+                                            if e1.values[k] != e2.values[k] or e1.suffixes_resets != e2.suffixes_resets:
                                                 e_index = k
                                                 reset_i = [newLRTWs1[0].reset] + table_element[i].suffixes_resets[k]
                                                 reset_j = [newLRTWs2[0].reset] + table_element[j].suffixes_resets[k]
@@ -95,7 +104,7 @@ class Element(object):
         self.suffixes_resets = suffixes_resets
 
     def __eq__(self, element):
-        if self.LRTWs == element.LRTWs and self.values == element.values:
+        if self.LRTWs == element.LRTWs and self.values == element.values and self.suffixes_resets == element.suffixes_resets:
             return True
         else:
             return False
@@ -190,7 +199,7 @@ def make_consistent(prefix_LTWs, e_index, reset_i, reset_j, index_i, index_j, ta
             if table_elements[i].values[0] == -1:
                 select.append([True] * len(new_e_LTWs))
             else:
-                temp_list = [[True, False]] * (len(new_e_LTWs) - 1) + [[True]]
+                temp_list = [[True, False]] * len(new_e_LTWs)
                 select = [list(situation) for situation in product(*temp_list)]
                 # 再一次进行过滤，去除无效的猜测
                 temp_select = []
@@ -212,6 +221,10 @@ def make_consistent(prefix_LTWs, e_index, reset_i, reset_j, index_i, index_j, ta
                 if is_LRTWs_valid(new_LRTWs):
                     DTWs = LRTW_to_DTW(new_LRTWs)
                     value = system.test_DTWs_normal(DTWs, True)
+                    if value == -1:
+                        if not check_guessed_to_sink(LRTW_to_DRTW(new_LRTWs), system):
+                            flag = False
+                            break
                     temp_table.S[i].values.append(value)
                     temp_table.S[i].suffixes_resets.append(reset_temp[i])
                 else:
@@ -234,6 +247,10 @@ def make_consistent(prefix_LTWs, e_index, reset_i, reset_j, index_i, index_j, ta
                     if is_LRTWs_valid(new_LRTWs):
                         DTWs = LRTW_to_DTW(new_LRTWs)
                         value = system.test_DTWs_normal(DTWs, True)
+                        if value == -1:
+                            if not check_guessed_to_sink(LRTW_to_DRTW(new_LRTWs), system):
+                                flag = False
+                                break
                         temp_table.R[j].values.append(value)
                         temp_table.R[j].suffixes_resets.append(reset_temp[s_length + j])
                     else:
@@ -382,13 +399,16 @@ def fill(LRTWs, E, reset, system):
     values = []
     for i in range(len(E)):
         new_LRTWs = LRTWs + combine_LRTWs_with_LTWs(E[i], reset[i])
-        if not is_combined_LRTWs_valid(new_LRTWs):
-            return False, None
+        if is_LRTWs_valid(new_LRTWs):
+            DTWs = LRTW_to_DTW(new_LRTWs)
+            value = system.test_DTWs_normal(DTWs, True)
+            if value == -1:
+                if not check_guessed_to_sink(LRTW_to_DRTW(new_LRTWs), system):
+                    return False, None
+            values.append(value)
         else:
-            if is_LRTWs_valid(new_LRTWs):
-                DTWs = LRTW_to_DTW(new_LRTWs)
-                value = system.test_DTWs_normal(DTWs, True)
-                values.append(value)
+            if not is_combined_LRTWs_valid(new_LRTWs):
+                return False, None
             else:
                 valid_LRTWs = get_valid_LRTWs(new_LRTWs)
                 DTWs = LRTW_to_DTW(valid_LRTWs)
@@ -411,6 +431,27 @@ def check_guessed_reset(LRTWs, elements):
                     break
             else:
                 break
+    return True
+
+
+# LRTWs转DTWs有效，但测试值为-1时，需要确保后续Reset均为True
+def check_guessed_to_sink(DRTWs, system):
+    now_time = 0
+    cur_state = system.init_state
+    index = 0
+    for index in range(len(DRTWs)):
+        DTW = DRTWs[index]
+        cur_state, value, reset = system.test_DTW(DTW, now_time, cur_state)
+        if value == -1:
+            break
+        if reset:
+            now_time = 0
+        else:
+            now_time = now_time + DTW.time
+    while index < len(DRTWs):
+        if not DRTWs[index].reset:
+            return False
+        index += 1
     return True
 
 
@@ -437,16 +478,16 @@ def guess_resets_in_suffixes(E):
     # res = [
     #     [[], [True], [True, True]],
     #     [[], [True], [True, False]]
+    #     [[], [False], [True, True]],
+    #     [[], [False], [True, False]]
+    #     ......
     # ]
     resets_list = []
     for e in E:
         if not e:
             resets_list.append([[]])
         else:
-            if len(e) == 1:
-                temp_list = [[True]]
-            else:
-                temp_list = [[True, False]] * (len(e) - 1) + [[True]]
+            temp_list = [[True, False]] * len(e)
             resets_list.append([list(situation) for situation in product(*temp_list)])
     return [list(resets) for resets in product(*resets_list)]
 

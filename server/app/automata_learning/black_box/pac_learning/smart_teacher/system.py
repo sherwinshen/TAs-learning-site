@@ -244,7 +244,7 @@ def build_canonicalOTA(system):
 
     sinkFlag = False
     newTrans = []
-    sink_state = None
+    sink_state = 'sink'
     tranNumber = len(system.trans)
 
     for state in system.states:

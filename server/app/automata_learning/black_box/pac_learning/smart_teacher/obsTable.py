@@ -15,10 +15,10 @@ class ObsTable(object):
             print([ltw.show() for ltw in e])
         print("new_S:" + str(len(self.S)))
         for s in self.S:
-            print([lrtw.show() for lrtw in s.LRTWs], s.values)
+            print([lrtw.show() for lrtw in s.LRTWs], s.values, s.suffixes_resets)
         print("new_R:" + str(len(self.R)))
         for r in self.R:
-            print([lrtw.show() for lrtw in r.LRTWs], r.values)
+            print([lrtw.show() for lrtw in r.LRTWs], r.values, r.suffixes_resets)
 
     # Determine whether table is prepared
     def is_prepared(self):
@@ -35,7 +35,7 @@ class ObsTable(object):
         for r in self.R:
             flag = False
             for s in self.S:
-                if r.values == s.values:
+                if r.values == s.values and r.suffixes_resets == s.suffixes_resets:
                     flag = True
                     break
             if not flag:
@@ -53,7 +53,7 @@ class ObsTable(object):
         table_element = [s for s in self.S] + [r for r in self.R]
         for i in range(0, len(table_element) - 1):
             for j in range(i + 1, len(table_element)):
-                if table_element[i].values == table_element[j].values:
+                if table_element[i].values == table_element[j].values and table_element[i].suffixes_resets == table_element[j].suffixes_resets:
                     temp_elements1 = []
                     temp_elements2 = []
                     for element in table_element:
@@ -67,10 +67,14 @@ class ObsTable(object):
                             newLRTWs2 = delete_prefix(e2.LRTWs, table_element[j].LRTWs)
                             if len(newLRTWs1) == len(newLRTWs2) == 1:
                                 if newLRTWs1[0].action == newLRTWs2[0].action and newLRTWs1[0].time == newLRTWs2[0].time:
-                                    if e1.values != e2.values:
+                                    if newLRTWs1[0].reset != newLRTWs2[0].reset:
+                                        flag = False
+                                        consistent_add = [TimedWord(newLRTWs1[0].action, newLRTWs1[0].time)]
+                                        return flag, consistent_add
+                                    if e1.values != e2.values or e1.suffixes_resets != e2.suffixes_resets:
                                         flag = False
                                         for k in range(0, len(e1.values)):
-                                            if e1.values[k] != e2.values[k]:
+                                            if e1.values[k] != e2.values[k] or e1.suffixes_resets[k] != e2.suffixes_resets[k]:
                                                 new_index = k
                                                 consistent_add = [TimedWord(newLRTWs1[0].action, newLRTWs1[0].time)] + self.E[new_index]
                                                 return flag, consistent_add
@@ -78,9 +82,10 @@ class ObsTable(object):
 
 
 class Element(object):
-    def __init__(self, LRTWs, values):
+    def __init__(self, LRTWs, values, suffixes_resets):
         self.LRTWs = LRTWs
         self.values = values  # [value]
+        self.suffixes_resets = suffixes_resets
 
 
 # init observation table
@@ -117,16 +122,20 @@ def make_consistent(table, consistent_add, system):
             LRTWs, value = TQs(LTWs, system)
             temp_value = value
             table.S[i].values.append(temp_value)
+            table.S[i].suffixes_resets.append(get_resets(LRTWs, consistent_add))
         else:
             table.S[i].values.append(-1)
+            table.S[i].suffixes_resets.append([True] * len(consistent_add))
     for j in range(0, len(table.R)):
         if is_valid(table.R[j].LRTWs):
             LTWs = LRTW_to_LTW(table.R[j].LRTWs) + consistent_add
             LRTWs, value = TQs(LTWs, system)
             temp_value = value
             table.R[j].values.append(temp_value)
+            table.R[j].suffixes_resets.append(get_resets(LRTWs, consistent_add))
         else:
             table.R[j].values.append(-1)
+            table.R[j].suffixes_resets.append([True] * len(consistent_add))
     return table
 
 
@@ -182,22 +191,33 @@ def fill_table_row(LRTWs, table, flag, system):
     if flag:
         values = [-1] * len(table.E)
         system.mq_num += len(table.E)
-        element = Element(LRTWs, values)
+        suffixes_resets = []
+        for e in table.E:
+            value = [True] * len(e)
+            suffixes_resets.append(value)
+        element = Element(LRTWs, values, suffixes_resets)
     else:
         values = []
+        suffixes_resets = []
         if is_valid(LRTWs):
             for e in table.E:
                 LTWs = LRTW_to_LTW(LRTWs) + e
                 tempLRTWs, tempValue = TQs(LTWs, system)
                 if len(e) != 0:
+                    resetList = get_resets(tempLRTWs, e)
                     value = tempValue
                 else:
+                    resetList = []
                     value = tempValue
                 values.append(value)
+                suffixes_resets.append(resetList)
         else:
+            for e in table.E:
+                value = [True] * len(e)
+                suffixes_resets.append(value)
             values = [-1] * len(table.E)
             system.mq_num += len(table.E)
-        element = Element(LRTWs, values)
+        element = Element(LRTWs, values, suffixes_resets)
     return element
 
 
