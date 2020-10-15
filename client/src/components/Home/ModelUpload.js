@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { message, Divider, Row, Col, Button, Upload } from "antd";
-import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
+import { EyeOutlined, UploadOutlined } from "@ant-design/icons";
 
 class ModelUpload extends Component {
   constructor(props) {
@@ -16,12 +16,9 @@ class ModelUpload extends Component {
     this.props.onRef(this);
   }
 
-  // 下载模板文件
-  download = () => {
-    const a = document.createElement("a");
-    a.href = "./static/model_template.md";
-    a.download = "model_template.md";
-    a.click();
+  // 查看格式说明
+  goToTemplate = () => {
+    window.open("./model_template.html", "_blank")
   };
 
   // 上传模型文件
@@ -34,25 +31,25 @@ class ModelUpload extends Component {
     reader.readAsText(file, "UTF-8");
     reader.onload = (e) => {
       const fileValue = JSON.parse(e.target.result);
-      if(!fileValue.acceptStates){
+      if (!fileValue.acceptStates) {
         message.warning("文件不符合模型格式，请重新上传!");
-        return false
+        return false;
       }
-      if(!fileValue.trans){
+      if (!fileValue.trans) {
         message.warning("文件不符合模型格式，请重新上传!");
-        return false
+        return false;
       }
-      if(!fileValue.initState){
+      if (!fileValue.initState) {
         message.warning("文件不符合模型格式，请重新上传!");
-        return false
+        return false;
       }
-      if(!fileValue.states){
+      if (!fileValue.states) {
         message.warning("文件不符合模型格式，请重新上传!");
-        return false
+        return false;
       }
-      if(!fileValue.inputs){
+      if (!fileValue.inputs) {
         message.warning("文件不符合模型格式，请重新上传!");
-        return false
+        return false;
       }
       message.success("文件上传成功!");
       this.setState({
@@ -92,8 +89,8 @@ class ModelUpload extends Component {
             </Upload>
           </Col>
           <Col span={10}>
-            <Button icon={<DownloadOutlined />} block onClick={this.download}>
-              下载格式说明
+            <Button icon={<EyeOutlined />} block onClick={this.goToTemplate}>
+              查看格式说明
             </Button>
           </Col>
         </Row>

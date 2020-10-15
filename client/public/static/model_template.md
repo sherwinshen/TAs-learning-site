@@ -1,8 +1,8 @@
-# TA模型文件说明
+## TA模型文件说明
 
 请严格按照格式说明构建您所想要学习的时间自动机模型的JSON文件，然后上传至系统进行学习。注意，目前系统仅支持学习**确定性单时钟自动机**（Deterministic One-clock Timed Automata）。
 
-## 格式说明：
+### 格式说明：
 
 - "states": the set of the name of locations;
 - "inputs": the input alphabet;
@@ -12,7 +12,7 @@
 - "initState": the name of initial location;
 - "acceptStates": the set of the name of accepting locations.
 
-## 模型举例：
+#### 模型举例：
 
 ```json
 {
@@ -43,8 +43,6 @@
 	"acceptStates": ["1", "5"]
 }
 ```
-
-
 
 ---
 
