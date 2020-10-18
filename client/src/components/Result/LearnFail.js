@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Divider} from "antd";
 import {Result} from "antd";
+import intl from "react-intl-universal";
 
 class LearnFail extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class LearnFail extends Component {
         <Divider/>
         <Result
           status="error"
-          title="学习失败或超时，请返回首页重试！"
+          title={intl.get("learn-fail")}
         />
       </div>
     )

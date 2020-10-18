@@ -3,6 +3,7 @@ import { Button, Divider, Empty, message } from "antd";
 import MiddleModel from "./MiddleModel";
 import { GetMiddle } from "../../api";
 import { getID } from "../../utils/session_storage";
+import intl from "react-intl-universal";
 
 class LearnProcess extends Component {
   constructor(props) {
@@ -33,11 +34,11 @@ class LearnProcess extends Component {
             type: "application/json",
           });
           a.href = URL.createObjectURL(blob);
-          a.download = "中间过程.json";
+          a.download = "learn-process.json";
           a.click();
-          message.success("下载成功！");
+          message.success(intl.get("download-success"));
         } else {
-          message.warning("下载失败！");
+          message.warning(intl.get("download-fail"));
         }
       })
       .catch((error) => {
@@ -55,14 +56,14 @@ class LearnProcess extends Component {
             marginBottom: "-10px",
           }}
         >
-          <h4 className="module__title">学习过程</h4>
+          <h4 className="module__title">{intl.get("learnProcess")}</h4>
           {this.state.teacherType === "smartTeacher" ? (
             <Button
               type="primary"
               disabled={!this.state.isFinished}
               onClick={this.getMiddle}
             >
-              下载中间过程
+              {intl.get("download-learnProcess")}
             </Button>
           ) : (
             <div />
@@ -77,7 +78,7 @@ class LearnProcess extends Component {
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={"Normal 类型学习暂不支持中间过程展示!"}
+            description={intl.get('learnProcess-warn')}
           />
         )}
       </div>

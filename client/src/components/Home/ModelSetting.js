@@ -18,6 +18,7 @@ import {
 } from "../../utils/session_storage";
 import { getMinUpperGuard } from "../../utils/upperGuard";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import intl from "react-intl-universal";
 
 class ModelSetting extends Component {
   constructor(props) {
@@ -71,14 +72,14 @@ class ModelSetting extends Component {
 
   // 请求失败
   fail = () => {
-    message.error("请求失败，请重新设置！");
+    message.error(intl.get("fail-msg-1"));
     this.reset();
     this.props.deleteModel();
   };
 
   onFinish = (values) => {
     if (!this.state.model) {
-      message.error("请先上传模型!");
+      message.error(intl.get("info-msg-1"));
       return false;
     }
     setSetting(values);
@@ -89,7 +90,7 @@ class ModelSetting extends Component {
       .then((response) => {
         const data = response.data;
         if (data.code === 1) {
-          message.success("请求成功，正在学习中，请耐心等待！！");
+          message.success(intl.get("wait-msg-1"));
           // 将请求 id 存至 session localstorage
           setID(data.id);
           setModel(this.state.model);
@@ -120,7 +121,7 @@ class ModelSetting extends Component {
     return (
       <div className="model-setting module">
         <div style={{ display: "flex" }}>
-          <h4 className="module__title">参数设置</h4>
+          <h4 className="module__title">{intl.get("parameterSettings")}</h4>
           <QuestionCircleOutlined
             onClick={this.showInfo}
             style={{ fontSize: "16px", marginTop: "6px", marginLeft: "6px" }}
@@ -134,17 +135,8 @@ class ModelSetting extends Component {
           wrapperCol={{ span: 17 }}
           ref={this.formRef}
         >
-          <Form.Item label="模型类型" name="boxType" initialValue={"blackBox"}>
-            <Radio.Group
-              onChange={this.onChangeBoxType}
-              value={this.state.boxType}
-            >
-              <Radio value={"blackBox"}>黑(灰)盒</Radio>
-              <Radio value={"whiteBox"}>白盒</Radio>
-            </Radio.Group>
-          </Form.Item>
           <Form.Item
-            label="学习类型"
+            label={intl.get("teacherType")}
             name="teacherType"
             initialValue={"smartTeacher"}
           >
@@ -156,11 +148,28 @@ class ModelSetting extends Component {
               <Radio value={"normalTeacher"}>Normal</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="超时设置(min)" name="timeout" initialValue={1}>
+          <Form.Item
+            label={intl.get("EqType")}
+            name="boxType"
+            initialValue={"blackBox"}
+          >
+            <Radio.Group
+              onChange={this.onChangeBoxType}
+              value={this.state.boxType}
+            >
+              <Radio value={"blackBox"}>{intl.get("PACTesting")}</Radio>
+              <Radio value={"whiteBox"}>{intl.get("exactEq")}</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label={intl.get("timeout")}
+            name="timeout"
+            initialValue={5}
+          >
             <InputNumber style={{ width: "90%" }} min={1} max={30} />
           </Form.Item>
           <Form.Item
-            label="Guard上界"
+            label={intl.get("GuardUpper")}
             name="upperGuard"
             initialValue={this.state.upperGuard}
           >
@@ -171,56 +180,57 @@ class ModelSetting extends Component {
           </Form.Item>
           {this.state.boxType === "blackBox" ? (
             <Fragment>
-              <Form.Item label="精确度(0-1)" name="epsilon" initialValue={0.9}>
+              <Form.Item
+                label={intl.get("accuracy")}
+                name="epsilon"
+                initialValue={0.9}
+              >
                 <InputNumber style={{ width: "90%" }} min={0} max={1} />
               </Form.Item>
-              <Form.Item label="置信值(0-1)" name="delta" initialValue={0.9}>
+              <Form.Item
+                label={intl.get("confidence")}
+                name="delta"
+                initialValue={0.9}
+              >
                 <InputNumber style={{ width: "90%" }} min={0} max={1} />
               </Form.Item>
             </Fragment>
           ) : null}
           <Form.Item style={{ justifyContent: "center", textAlign: "center" }}>
             <Button type="primary" htmlType="submit">
-              开始学习
+              {intl.get("start")}
             </Button>
             <Button style={{ marginLeft: "20px" }} onClick={this.reset}>
-              重置参数
+              {intl.get("reset")}
             </Button>
           </Form.Item>
         </Form>
         <Modal
-          title="参数说明"
+          title={intl.get("parameterDescription")}
           visible={this.state.visible}
           onOk={this.handleCancel}
           onCancel={this.handleCancel}
-          okText={"确定"}
-          cancelText={"取消"}
+          okText={intl.get("confirm")}
+          cancelText={intl.get("cancel")}
           width={"40%"}
         >
+          <p>{intl.get("parameter-msg-1")}</p>
+          <p>{intl.get("parameter-msg-2")}</p>
           <p>
-            1.
-            模型类型分为黑(灰)盒与白盒，其中白盒表示学习算法知道系统原始模型，假设模型的等价查询可以直接判断是否等价；而黑(灰)盒表示学习算法并不直接知道系统原始模型或者仅有部分先验知识，算法仅能对系统进行输入并通过观察来判断行为是否接收与不接收，因此假设模型的等价查询我们通过PAC理论（准确度和置信度）来近似。
-          </p>
-          <p>
-            2. 学习类型分为smart learning和normal learning，两者的区别在于smart learning假设在对系统进行输入的时候能够观察到内部时钟是否重置（参考watch dog），而normal learning我们假设不能直接获得系统内部时钟的重置信息，我们仅能够通过猜测重置情况来进行学习，这也极大增加了算法的复杂度。
-          </p>
-          <p>
-            3. 由于服务器限制，超时设置目前仅支持最大值30min，如果系统较为复杂，建议下载原型工具进行使用，下载地址：
+            {intl.get("parameter-msg-3")}
             <a
               href={"https://github.com/MrEnvision/learning_OTA_by_testing"}
               target="blank"
             >
-              黑(灰)盒学习工具
-            </a>{" "}
-            和{" "}
+              {intl.get("header-instruction-pac")}
+            </a>
+            {" " + intl.get("and") + " "}
             <a href={"https://github.com/Leslieaj/OTALearning"} target="blank">
-              白盒学习工具
+              {intl.get("header-instruction-exact")}
             </a>
             。
           </p>
-          <p>
-            4. 实际应用中学习算法需要知晓系统的输入行为，参数设置中省略该设置，后台直接从用户上传的模型文件中获取了。
-          </p>
+          <p>{intl.get("parameter-msg-4")}</p>
         </Modal>
       </div>
     );

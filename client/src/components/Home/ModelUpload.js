@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { message, Divider, Row, Col, Button, Upload } from "antd";
+import { message, Divider, Row, Col, Button, Upload, Radio } from "antd";
 import { EyeOutlined, UploadOutlined } from "@ant-design/icons";
+import intl from "react-intl-universal";
 
 class ModelUpload extends Component {
   constructor(props) {
@@ -8,6 +9,7 @@ class ModelUpload extends Component {
     this.state = {
       fileList: [],
       model: null,
+      exampleID: null,
     };
   }
 
@@ -18,13 +20,13 @@ class ModelUpload extends Component {
 
   // 查看格式说明
   goToTemplate = () => {
-    window.open("./model_template.html", "_blank")
+    window.open("./model_template.html", "_blank");
   };
 
   // 上传模型文件
   upload = (file) => {
     if (file.type !== "application/json") {
-      message.error("只支持 JSON 文件上传，可下载格式说明参考！");
+      message.error(intl.get("upload-warn-1"));
       return false;
     }
     const reader = new FileReader();
@@ -32,29 +34,30 @@ class ModelUpload extends Component {
     reader.onload = (e) => {
       const fileValue = JSON.parse(e.target.result);
       if (!fileValue.acceptStates) {
-        message.warning("文件不符合模型格式，请重新上传!");
+        message.warning(intl.get("upload-warn-2"));
         return false;
       }
       if (!fileValue.trans) {
-        message.warning("文件不符合模型格式，请重新上传!");
+        message.warning(intl.get("upload-warn-2"));
         return false;
       }
       if (!fileValue.initState) {
-        message.warning("文件不符合模型格式，请重新上传!");
+        message.warning(intl.get("upload-warn-2"));
         return false;
       }
       if (!fileValue.states) {
-        message.warning("文件不符合模型格式，请重新上传!");
+        message.warning(intl.get("upload-warn-2"));
         return false;
       }
       if (!fileValue.inputs) {
-        message.warning("文件不符合模型格式，请重新上传!");
+        message.warning(intl.get("upload-warn-2"));
         return false;
       }
-      message.success("文件上传成功!");
+      message.success(intl.get("upload-success"));
       this.setState({
         fileList: [file],
         model: fileValue,
+        exampleID: null,
       });
       this.props.setModel(fileValue);
     };
@@ -70,12 +73,43 @@ class ModelUpload extends Component {
     this.props.setModel(null);
   };
 
+  onChange = (e) => {
+    const that = this;
+    const value = e.target.value;
+    const fileName = `./static/example-${value}.json`;
+    const request = new XMLHttpRequest();
+    request.open("get", fileName);
+    request.send(null);
+    request.onload = function () {
+      if (request.status === 200) {
+        const json = JSON.parse(request.responseText);
+        message.success(`${intl.get("selected")}example-${value}!`);
+        that.setState({
+          model: json,
+          fileList: [],
+          exampleID: e.target.value,
+        });
+        that.props.setModel(json);
+      }
+    };
+  };
+
   render() {
     return (
       <div className="model-upload module">
-        <h4 className="module__title">模型上传</h4>
+        <h4 className="module__title">{intl.get("modelUpload")}</h4>
         <Divider />
-        <Row gutter={20} style={{ marginBottom: "15px" }}>
+        <Radio.Group
+          onChange={this.onChange}
+          value={this.state.exampleID}
+          style={{ marginBottom: "15px" }}
+        >
+          <Radio value={1}>Example-1</Radio>
+          <Radio value={2}>Example-2</Radio>
+          <Radio value={3}>Example-3</Radio>
+          <Radio value={4}>Example-4</Radio>
+        </Radio.Group>
+        <Row gutter={20} style={{ marginBottom: "15px" }} justify="center">
           <Col span={10}>
             <Upload
               className="upload-btn"
@@ -84,13 +118,13 @@ class ModelUpload extends Component {
               onRemove={this.remove}
             >
               <Button type="primary" icon={<UploadOutlined />} block>
-                上传模型文件
+                {intl.get("upload-model")}
               </Button>
             </Upload>
           </Col>
           <Col span={10}>
             <Button icon={<EyeOutlined />} block onClick={this.goToTemplate}>
-              查看格式说明
+              {intl.get("see-format")}
             </Button>
           </Col>
         </Row>

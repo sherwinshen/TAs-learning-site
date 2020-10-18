@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Result, Divider, Button } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Automata from "../common/Automata";
+import intl from "react-intl-universal";
 
 class LearnedModel extends Component {
   constructor(props) {
@@ -32,7 +33,7 @@ class LearnedModel extends Component {
       context.drawImage(img, 0, 0);
       const imgBase64 = canvas.toDataURL("image/png");
       const a = document.createElement("a");
-      a.download = "结果模型.png";
+      a.download = "learned-model.png";
       a.href = imgBase64;
       a.click();
     };
@@ -54,7 +55,7 @@ class LearnedModel extends Component {
             disabled={!this.state.isFinished}
             onClick={this.getLearnedModel}
           >
-            下载结果模型
+            {intl.get("download-learned-model")}
           </Button>
         </div>
 
@@ -62,8 +63,8 @@ class LearnedModel extends Component {
         {!this.state.model ? (
           <Result
             icon={<LoadingOutlined />}
-            title="学习中..."
-            subTitle="请耐心等待"
+            title={intl.get("learning")}
+            subTitle={intl.get("wait-msg-2")}
           />
         ) : (
           <Automata

@@ -69,7 +69,7 @@ class Header extends Component {
               icon={<ArrowLeftOutlined />}
               onClick={this.props.backToHome}
             >
-              返回首页
+              {intl.get("backToHome")}
             </Button>
           ) : null}
           <Button
@@ -78,7 +78,7 @@ class Header extends Component {
             onClick={this.showInfo}
             style={{ marginRight: "10px" }}
           >
-            使用说明
+            {intl.get("instruction")}
           </Button>
           <Radio.Group
             options={this.state.langOptions}
@@ -90,25 +90,25 @@ class Header extends Component {
           />
         </div>
         <Modal
-          title="使用说明"
+          title={intl.get("instruction")}
           visible={this.state.visible}
           onOk={this.handleCancel}
           onCancel={this.handleCancel}
-          okText={"确定"}
-          cancelText={"取消"}
+          okText={intl.get("confirm")}
+          cancelText={intl.get("cancel")}
           width={"60%"}
         >
           <p>
-            如果网站使用出现错误，您也可以直接下载原型工具使用，下载地址：
+            {intl.get("header-instruction-1")}
             <a
               href={"https://github.com/MrEnvision/learning_OTA_by_testing"}
               target="blank"
             >
-              黑(灰)盒学习工具
-            </a>{" "}
-            和{" "}
+              {intl.get("header-instruction-pac")}
+            </a>
+            {" " + intl.get("and") + " "}
             <a href={"https://github.com/Leslieaj/OTALearning"} target="blank">
-              白盒学习工具
+              {intl.get("header-instruction-exact")}
             </a>
             。
           </p>

@@ -35,7 +35,7 @@ class Home extends Component {
   render() {
     return (
       <div className="home">
-        <Header title={intl.get('homeTitle')} type="home" setLang={this.props.setLang} />
+        <Header title={intl.get('home-header-title')} type="home" setLang={this.props.setLang} />
         <Row className="home__wrap">
           <Col span={15} className="home__wrap--left">
             <ModelInfo model={this.state.model} deleteModel={this.deleteModel}/>

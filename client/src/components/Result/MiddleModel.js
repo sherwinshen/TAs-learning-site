@@ -6,7 +6,7 @@ import {LoadingOutlined, EllipsisOutlined} from "@ant-design/icons";
 // import "swiper/swiper.scss";
 // import "swiper/components/navigation/navigation.scss";
 import Automata from "../common/Automata";
-
+import intl from "react-intl-universal";
 // SwiperCore.use([Navigation]);
 
 class MiddleModel extends Component {
@@ -30,7 +30,7 @@ class MiddleModel extends Component {
       <div className="middle-model">
         {this.state.middleModels.length === 0 ? (
           <div className="text-align-center">
-            <Spin tip="学习中..." indicator={antIcon} />
+            <Spin tip={intl.get('learning')} indicator={antIcon} />
           </div>
         ) : (
           <div className="middle-model__content">

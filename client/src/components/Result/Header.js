@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import {Button, Modal, Radio} from "antd";
+import { Button, Modal, Radio } from "antd";
 import { ArrowLeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import intl from 'react-intl-universal';
+import intl from "react-intl-universal";
 
 class Header extends Component {
   constructor(props) {
@@ -62,7 +62,7 @@ class Header extends Component {
           onClick={this.props.backToHome}
           style={{ zIndex: 999 }}
         >
-          返回首页
+          {intl.get("backToHome")}
         </Button>
         <h1 className="header__title">{this.state.title}</h1>
         <div className="header__btn">
@@ -72,7 +72,7 @@ class Header extends Component {
             onClick={this.showInfo}
             style={{ marginRight: "10px" }}
           >
-            使用说明
+            {intl.get("instruction")}
           </Button>
           <Radio.Group
             options={this.state.langOptions}
@@ -84,22 +84,22 @@ class Header extends Component {
           />
         </div>
         <Modal
-          title="使用说明"
+          title={intl.get("instruction")}
           visible={this.state.visible}
           onOk={this.handleCancel}
           onCancel={this.handleCancel}
-          okText={"确定"}
-          cancelText={"取消"}
+          okText={intl.get("confirm")}
+          cancelText={intl.get("cancel")}
           width={"60%"}
         >
           <p>
-            如果网站使用出现错误，您也可以下载原型工具使用，下载地址：
+            {intl.get("header-instruction-1")}
             <a href={"https://github.com/MrEnvision/learning_OTA_by_testing"}>
-              White Box Learning Tool
-            </a>{" "}
-            和{" "}
+              {intl.get("header-instruction-exact")}
+            </a>
+            {" " + intl.get("and") + " "}
             <a href={"https://github.com/Leslieaj/OTALearningNormal"}>
-              Black Box Learning Tool
+              {intl.get("header-instruction-pac")}
             </a>
             。
           </p>

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Result, Divider } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Automata from "../common/Automata";
+import intl from "react-intl-universal";
 
 class ModelGraph extends Component {
   constructor(props) {
@@ -25,8 +26,8 @@ class ModelGraph extends Component {
         {!this.state.model ? (
           <Result
             icon={<LoadingOutlined />}
-            title="学习中..."
-            subTitle="请耐心等待"
+            title={intl.get('learning')}
+            subTitle={intl.get('wait-msg-2')}
           />
         ) : (
           <Automata model={this.state.model} width={"100%"} height={"400px"} isFull={true}/>

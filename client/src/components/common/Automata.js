@@ -1,6 +1,7 @@
 import React from "react";
 import { Graphviz } from "graphviz-react";
-import {message} from "antd";
+import { message } from "antd";
+import intl from "react-intl-universal";
 // import { Modal } from "antd";
 // import {ZoomInOutlined } from '@ant-design/icons';
 
@@ -64,7 +65,7 @@ function Automata(props) {
     );
   } catch (e) {
     props.removeModel();
-    message.error('模型绘制失败，请按照模版格式重新上传文件！')
+    message.error(intl.get("model-draw-fail-msg"));
     return null;
   }
 }

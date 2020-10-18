@@ -19,6 +19,7 @@ import ModelGraph from "../../components/Result/ModelGraph";
 import LearnedModel from "../../components/Result/LearnedModel";
 import LearnedResult from "../../components/Result/LearnedResult";
 import LearnFail from "../../components/Result/LearnFail";
+import LearnFailModel from "../../components/Result/LearnFailModel";
 import intl from "react-intl-universal";
 
 let timer;
@@ -43,11 +44,11 @@ class LearnResult extends Component {
 
   componentDidMount() {
     if (!this.state.id) {
-      message.warning("请先上传模型并配置参数！");
+      message.warning(intl.get("upload-warn-3"));
       this.backToHome();
       return false;
     }
-    this.getProcessing(this.state.id);
+    this.initProcessing(this.state.id);
   }
 
   componentWillUnmount() {
@@ -64,6 +65,36 @@ class LearnResult extends Component {
       Delete({ id: this.state.id }).then(() => {});
     }
     this.props.history.push("/");
+  };
+
+  // 初始查询
+  initProcessing = (id) => {
+    Processing({ id, lastModified: this.state.lastModified })
+      .then((response) => {
+        const data = response.data;
+        if (data.code === 1) {
+          // 学习结束
+          this.getResult(id);
+          if (this.state.teacherType === "smartTeacher") {
+            this.setState({
+              middleModels: data.middleModels,
+              ifOmit: data.ifOmit,
+              lastModified: data.lastModified,
+              isFinished: true,
+            });
+          } else {
+            this.setState({
+              lastModified: data.lastModified,
+              isFinished: true,
+            });
+          }
+        } else {
+          this.getProcessing(id);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   // 开始轮询
@@ -119,14 +150,14 @@ class LearnResult extends Component {
       .then((response) => {
         const data = response.data;
         if (data.code === 0) {
-          message.success("学习成功！");
+          message.success(intl.get( "learn-success"));
           this.setState({
             learnedModel: data.learnedModel,
             result: data.result,
             learnFlag: true,
           });
         } else {
-          message.warning("学习失败或超时！");
+          message.warning(intl.get("learn-fail"));
           this.setState({
             learnFlag: false,
           });
@@ -148,30 +179,30 @@ class LearnResult extends Component {
           {arr.map((item) => {
             let key, value;
             if (item[0] === "timeout") {
-              key = "超时设置(min)";
+              key = intl.get("timeout");
               value = item[1];
             } else if (item[0] === "upperGuard") {
-              key = "Guard上界";
+              key = intl.get("GuardUpper");
               value = item[1];
             } else if (item[0] === "boxType") {
-              key = "模型类型";
+              key =intl.get("EqType");
               if (item[1] === "blackBox") {
-                value = "黑(灰)盒";
+                value = intl.get('PACTesting');
               } else {
-                value = "白盒";
+                value = intl.get('exactEq');
               }
             } else if (item[0] === "teacherType") {
-              key = "学习类型";
+              key = intl.get('teacherType');
               if (item[1] === "smartTeacher") {
                 value = "smart";
               } else {
                 value = "normal";
               }
             } else if (item[0] === "epsilon") {
-              key = "精确值(0-1)";
+              key = intl.get('accuracy');
               value = item[1];
             } else if (item[0] === "delta") {
-              key = "置信度(0-1)";
+              key = intl.get('confidence');
               value = item[1];
             }
             return (
@@ -197,21 +228,16 @@ class LearnResult extends Component {
         <Row className="learn-result__wrap">
           {this.renderSetting()}
           <Col span={24}>
-            {this.state.learnFlag ||
-            this.state.teacherType === "normalTeacher" ? (
-              <LearnProcess
-                middleModels={this.state.middleModels}
-                ifOmit={this.state.ifOmit}
-                teacherType={this.state.teacherType}
-                isFinished={this.state.isFinished}
-              />
-            ) : (
-              <LearnFail title="学习过程" />
-            )}
+            <LearnProcess
+              middleModels={this.state.middleModels}
+              ifOmit={this.state.ifOmit}
+              teacherType={this.state.teacherType}
+              isFinished={this.state.isFinished}
+            />
           </Col>
           <Col span={12}>
             <ModelGraph
-              title={"原始模型"}
+              title={intl.get('init-model')}
               model={this.state.model}
               isFull={true}
             />
@@ -219,13 +245,17 @@ class LearnResult extends Component {
           <Col span={12}>
             {this.state.learnFlag ? (
               <LearnedModel
-                title={"结果模型"}
+                title={intl.get('learned-model')}
                 model={this.state.learnedModel}
                 isFull={true}
                 isFinished={this.state.isFinished}
               />
             ) : (
-              <LearnFail title="结果模型" />
+              <LearnFailModel
+                title={intl.get('learned-model')}
+                teacherType={this.state.teacherType}
+                model={this.state.middleModels.slice(-1)[0]}
+              />
             )}
           </Col>
           <Col span={24}>
@@ -235,7 +265,7 @@ class LearnResult extends Component {
                 isFinished={this.state.isFinished}
               />
             ) : (
-              <LearnFail title="学习结果" />
+              <LearnFail title={intl.get("learned-result")} />
             )}
           </Col>
         </Row>
