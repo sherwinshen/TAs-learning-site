@@ -19,6 +19,7 @@ import ModelGraph from "../../components/Result/ModelGraph";
 import LearnedModel from "../../components/Result/LearnedModel";
 import LearnedResult from "../../components/Result/LearnedResult";
 import LearnFail from "../../components/Result/LearnFail";
+import intl from "react-intl-universal";
 
 let timer;
 
@@ -148,30 +149,30 @@ class LearnResult extends Component {
             let key, value;
             if (item[0] === "timeout") {
               key = "超时设置(min)";
-              value = item[1]
+              value = item[1];
             } else if (item[0] === "upperGuard") {
               key = "Guard上界";
-              value = item[1]
+              value = item[1];
             } else if (item[0] === "boxType") {
               key = "模型类型";
-              if (item[1] === 'blackBox'){
-                value = "黑(灰)盒"
-              }else {
-                value = "白盒"
+              if (item[1] === "blackBox") {
+                value = "黑(灰)盒";
+              } else {
+                value = "白盒";
               }
             } else if (item[0] === "teacherType") {
               key = "学习类型";
-              if (item[1] === 'smartTeacher'){
-                value = "smart"
-              }else {
-                value = "normal"
+              if (item[1] === "smartTeacher") {
+                value = "smart";
+              } else {
+                value = "normal";
               }
             } else if (item[0] === "epsilon") {
               key = "精确值(0-1)";
-              value = item[1]
+              value = item[1];
             } else if (item[0] === "delta") {
               key = "置信度(0-1)";
-              value = item[1]
+              value = item[1];
             }
             return (
               <div key={item[0]} className="title">
@@ -188,9 +189,10 @@ class LearnResult extends Component {
     return (
       <div className="result">
         <Header
-          title="学习过程与结果"
+          title={intl.get("resultTitle")}
           type="result"
           backToHome={this.backToHome}
+          setLang={this.props.setLang}
         />
         <Row className="learn-result__wrap">
           {this.renderSetting()}

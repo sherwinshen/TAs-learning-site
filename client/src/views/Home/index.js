@@ -6,6 +6,7 @@ import ModelInfo from "../../components/Home/ModelInfo";
 import ModelUpload from "../../components/Home/ModelUpload";
 import ModelSetting from "../../components/Home/ModelSetting";
 import { deleteID } from "../../utils/session_storage";
+import intl from "react-intl-universal";
 
 class Home extends Component {
   constructor(props) {
@@ -34,7 +35,7 @@ class Home extends Component {
   render() {
     return (
       <div className="home">
-        <Header title="时间自动机学习工具" type="home" />
+        <Header title={intl.get('homeTitle')} type="home" setLang={this.props.setLang} />
         <Row className="home__wrap">
           <Col span={15} className="home__wrap--left">
             <ModelInfo model={this.state.model} deleteModel={this.deleteModel}/>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Button, Modal } from "antd";
-import {ArrowLeftOutlined, InfoCircleOutlined} from "@ant-design/icons";
+import {Button, Modal, Radio} from "antd";
+import { ArrowLeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import intl from 'react-intl-universal';
 
 class Header extends Component {
   constructor(props) {
@@ -8,7 +9,12 @@ class Header extends Component {
     this.state = {
       type: this.props.type,
       title: this.props.title,
+      langOptions: [
+        { label: "中文", value: "zh-CN" },
+        { label: "EN", value: "en-US" },
+      ],
       visible: false,
+      lang: localStorage.getItem("lang_type") || "zh-CN",
     };
   }
 
@@ -22,6 +28,14 @@ class Header extends Component {
     this.setState({
       visible: false,
     });
+  };
+
+  setLang = (e) => {
+    const newLang = e.target.value;
+    this.setState({
+      lang: newLang,
+    });
+    this.props.setLang(newLang);
   };
 
   // showInfo = () => {
@@ -46,15 +60,28 @@ class Header extends Component {
           shape="round"
           icon={<ArrowLeftOutlined />}
           onClick={this.props.backToHome}
-          style={{zIndex: 999}}
+          style={{ zIndex: 999 }}
         >
           返回首页
         </Button>
         <h1 className="header__title">{this.state.title}</h1>
         <div className="header__btn">
-          <Button type="text" icon={<InfoCircleOutlined />} onClick={this.showInfo}>
+          <Button
+            type="text"
+            icon={<InfoCircleOutlined />}
+            onClick={this.showInfo}
+            style={{ marginRight: "10px" }}
+          >
             使用说明
           </Button>
+          <Radio.Group
+            options={this.state.langOptions}
+            onChange={this.setLang}
+            value={this.state.lang}
+            optionType="button"
+            buttonStyle="solid"
+            size="small"
+          />
         </div>
         <Modal
           title="使用说明"
@@ -73,7 +100,8 @@ class Header extends Component {
             和{" "}
             <a href={"https://github.com/Leslieaj/OTALearningNormal"}>
               Black Box Learning Tool
-            </a>。
+            </a>
+            。
           </p>
         </Modal>
       </div>
