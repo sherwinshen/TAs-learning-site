@@ -109,7 +109,7 @@ class ModelUpload extends Component {
           <Radio value={3}>Example-3</Radio>
           <Radio value={4}>Example-4</Radio>
         </Radio.Group>
-        <Row gutter={20} style={{ marginBottom: "15px" }} justify="center">
+        <Row gutter={20} style={{ marginBottom: "15px" }}>
           <Col span={10}>
             <Upload
               className="upload-btn"

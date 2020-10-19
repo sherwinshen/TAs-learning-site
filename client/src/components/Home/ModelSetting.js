@@ -219,7 +219,7 @@ class ModelSetting extends Component {
           <p>
             {intl.get("parameter-msg-3")}
             <a
-              href={"https://github.com/MrEnvision/learning_OTA_by_testing"}
+              href={"https://github.com/MrEnvision/pac_learn_DOTAs"}
               target="blank"
             >
               {intl.get("header-instruction-pac")}

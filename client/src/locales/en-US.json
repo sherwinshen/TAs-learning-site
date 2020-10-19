@@ -34,26 +34,24 @@
   "confidence": "confidence(0-1)",
   "start": "start",
   "reset": "reset",
-  "parameterDescription": "Parameter Description",
+  "parameterDescription": "Parameter introductions",
   "parameter-msg-1": "1. Teacher types are divided into smart teacher and normal teacher. The difference between the two is that smart teacher assumes that the internal clock reset can be observed outside, while normal teacher assumes that the system internal clock reset cannot be directly obtained.  For normal teacher, the algorithm need to guess the reset situation, which also greatly increases the complexity of the algorithm.",
   "parameter-msg-2": "2. Equivalence query is divided into exact EQs and PAC testing. The exact EQs is implemented using a decision procedure for language inclusion; the PAC testing is based on the PAC theory through the test to approximate exact EQs. For PAC testing, the algorithm can provide quality assurance based on accuracy and confidence.",
-  "parameter-msg-3": "3. Due to server limitations, the timeout setting currently only supports a maximum of 30 minutes. If the system is more complicated, it is recommended to download the prototype tool for use. Download address:",
+  "parameter-msg-3": "3. Due to server limitations, the timeout setting currently only supports a maximum of 30 minutes. If the system is more complicated, it is recommended to download the prototype tool for use. Download address: ",
   "parameter-msg-4": "4. In practical applications, the learning algorithm needs to know the input behavior of the system. This setting is omitted and directly obtained from the model file uploaded by the user.",
   "upload-model": "Upload model file",
   "see-format": "View format desc",
   "modelUpload": "Model upload",
-
-
   "upload-warn-3": "Please upload the model and configure the parameters first!",
   "download-learned-model": "Download learned model",
   "learning": "learning...",
   "wait-msg-2": "Please wait patiently",
   "download-success": "Download successful!",
   "download-fail": "Download failed!",
-  "result": "Learning results",
+  "result": "result",
   "learningTime": "learning time",
   "mqNum": "#MQs",
-  "eqNum": "#Eqs",
+  "eqNum": "#EQs",
   "testNum": "#test",
   "tablesExplored": "#tables(Explored)",
   "correct": "correct",
@@ -68,5 +66,6 @@
   "learn-success": "Learning success!",
   "init-model": "Target model",
   "learned-model": "Learned model",
-  "learned-result": "Learned result"
+  "learned-result": "Learned result",
+  "resultTitle": "Learning Process and Results"
 }

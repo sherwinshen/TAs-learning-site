@@ -101,7 +101,7 @@ class Header extends Component {
           <p>
             {intl.get("header-instruction-1")}
             <a
-              href={"https://github.com/MrEnvision/learning_OTA_by_testing"}
+              href={"https://github.com/MrEnvision/pac_learn_DOTAs"}
               target="blank"
             >
               {intl.get("header-instruction-pac")}

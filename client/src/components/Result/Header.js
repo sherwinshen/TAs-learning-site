@@ -94,12 +94,15 @@ class Header extends Component {
         >
           <p>
             {intl.get("header-instruction-1")}
-            <a href={"https://github.com/MrEnvision/learning_OTA_by_testing"}>
-              {intl.get("header-instruction-exact")}
+            <a
+              href={"https://github.com/MrEnvision/pac_learn_DOTAs"}
+              target="blank"
+            >
+              {intl.get("header-instruction-pac")}
             </a>
             {" " + intl.get("and") + " "}
-            <a href={"https://github.com/Leslieaj/OTALearningNormal"}>
-              {intl.get("header-instruction-pac")}
+            <a href={"https://github.com/Leslieaj/OTALearning"} target="blank">
+              {intl.get("header-instruction-exact")}
             </a>
             。
           </p>

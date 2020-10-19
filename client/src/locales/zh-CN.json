@@ -14,8 +14,7 @@
   "acceptStates": "接受状态集",
   "modelInformation": "模型信息",
   "noData": "暂无数据",
-  "home-noDate-warn": "请先至右侧「模型上传」处上传包含模型信息的JSON文件，请严格按照格式说明！",
-
+  "home-noDate-warn": "请先至右侧「模型上传」处上传包含模型信息的JSON文件，注意严格按照格式说明！",
   "model-draw-fail-msg": "模型绘制失败，请按照模版格式重新上传文件！",
   "fail-msg-1": "请求失败，请重新设置！",
   "info-msg-1": "请先上传模型!",
@@ -43,7 +42,6 @@
   "upload-model": "上传模型文件",
   "see-format": "查看格式说明",
   "modelUpload": "模型上传",
-
   "upload-warn-3": "请先上传模型并配置参数！",
   "download-learned-model": "下载结果模型",
   "learning": "学习中...",
@@ -68,5 +66,6 @@
   "learn-success": "学习成功！",
   "init-model": "原始模型",
   "learned-model": "结果模型",
-  "learned-result": "学习结果"
+  "learned-result": "学习结果",
+  "resultTitle": "学习过程与结果"
 }

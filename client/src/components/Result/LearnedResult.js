@@ -61,7 +61,10 @@ class LearnedResult extends Component {
         } else if (key === "correct") {
           result.push([intl.get("correct"), value]);
         } else if (key === "passingRate") {
-          result.push([intl.get("passingRate"), value]);
+          result.push([
+            intl.get("passingRate"),
+            `${(value * 100).toFixed(2)}%`,
+          ]);
         }
       }
       result.sort(function (a, b) {
