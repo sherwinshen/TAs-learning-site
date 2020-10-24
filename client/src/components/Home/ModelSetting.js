@@ -136,19 +136,6 @@ class ModelSetting extends Component {
           ref={this.formRef}
         >
           <Form.Item
-            label={intl.get("teacherType")}
-            name="teacherType"
-            initialValue={"smartTeacher"}
-          >
-            <Radio.Group
-              onChange={this.onChangeTeacherType}
-              value={this.state.teacherType}
-            >
-              <Radio value={"smartTeacher"}>Smart</Radio>
-              <Radio value={"normalTeacher"}>Normal</Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
             label={intl.get("EqType")}
             name="boxType"
             initialValue={"blackBox"}
@@ -159,6 +146,19 @@ class ModelSetting extends Component {
             >
               <Radio value={"blackBox"}>{intl.get("PACTesting")}</Radio>
               <Radio value={"whiteBox"}>{intl.get("exactEq")}</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label={intl.get("teacherType")}
+            name="teacherType"
+            initialValue={"smartTeacher"}
+          >
+            <Radio.Group
+              onChange={this.onChangeTeacherType}
+              value={this.state.teacherType}
+            >
+              <Radio value={"smartTeacher"}>Smart</Radio>
+              <Radio value={"normalTeacher"}>Normal</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item
