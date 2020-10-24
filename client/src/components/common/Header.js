@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Modal, Radio } from "antd";
+import { Button, Radio } from "antd";
 import { ArrowLeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import intl from "react-intl-universal";
 
@@ -13,15 +13,12 @@ class Header extends Component {
         { label: "中文", value: "zh-CN" },
         { label: "EN", value: "en-US" },
       ],
-      visible: false,
       lang: localStorage.getItem("lang_type") || "zh-CN",
     };
   }
 
   showInfo = () => {
-    this.setState({
-      visible: true,
-    });
+    window.open("./introduction.html", "_blank");
   };
 
   handleCancel = () => {
@@ -89,30 +86,6 @@ class Header extends Component {
             size="small"
           />
         </div>
-        <Modal
-          title={intl.get("instruction")}
-          visible={this.state.visible}
-          onOk={this.handleCancel}
-          onCancel={this.handleCancel}
-          okText={intl.get("confirm")}
-          cancelText={intl.get("cancel")}
-          width={"60%"}
-        >
-          <p>
-            {intl.get("header-instruction-1")}
-            <a
-              href={"https://github.com/MrEnvision/pac_learn_DOTAs"}
-              target="blank"
-            >
-              {intl.get("header-instruction-pac")}
-            </a>
-            {" " + intl.get("and") + " "}
-            <a href={"https://github.com/Leslieaj/OTALearning"} target="blank">
-              {intl.get("header-instruction-exact")}
-            </a>
-            。
-          </p>
-        </Modal>
       </div>
     );
   }

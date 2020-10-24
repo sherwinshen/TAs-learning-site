@@ -107,7 +107,7 @@ class ModelUpload extends Component {
           <Radio value={1}>Example-1</Radio>
           <Radio value={2}>Example-2</Radio>
           <Radio value={3}>Example-3</Radio>
-          <Radio value={4}>Example-4</Radio>
+          <Radio value={4}>TCP protocol</Radio>
         </Radio.Group>
         <Row gutter={20} style={{ marginBottom: "15px" }}>
           <Col span={10}>
