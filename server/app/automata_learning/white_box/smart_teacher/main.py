@@ -1,85 +1,103 @@
 import time
 import copy
 
-from app.automata_learning.white_box.smart_teacher.ota import buildOTA, buildAssistantOTA
-from app.automata_learning.white_box.smart_teacher.otatable import init_table, add_ctx, make_closed, make_consistent, make_evidence_closed
-from app.automata_learning.white_box.smart_teacher.hypothesis import to_fa, fa_to_ota, remove_sinklocation
-from app.automata_learning.white_box.smart_teacher.equivalence import equivalence_query
-
 from app.data_storage.init import update_cache
+import app.automata_learning.white_box.smart_teacher.obsTable as obsTable
+from app.automata_learning.white_box.smart_teacher.system import build_system
+from app.automata_learning.white_box.smart_teacher.hypothesis import struct_discreteOTA, struct_hypothesisOTA, remove_sink_state
+from app.automata_learning.white_box.smart_teacher.teacher import EQs
+from app.automata_learning.white_box.smart_teacher.comparator import model_compare
 
 
-def white_smart_learning(learning_id, request_data, startTime, timeout, debug=False):
-    A, _ = buildOTA(request_data['model'], 's')
-    AA = buildAssistantOTA(A, 's')
-    max_time_value = request_data['upperGuard']
-    if debug:
-        print("**************Start to learn ...*******************")
-        print("---------------initial table-------------------")
-    sigma = AA.sigma
-    T1 = init_table(sigma, AA)
-    t_number = 1
-    if debug:
-        print("Table " + str(t_number) + " is as follow.")
-        T1.show()
-        print("-----------------------------------------------")
-    start = time.time()
+def white_smart_learning(learning_id, request_data, startTime, timeout, debug_flag=True):
+    system = build_system(request_data['model'])
+    actions = system.actions
+    comparator_flag = True
+
+    startLearning = time.time()
+    ### init Table
+    table = obsTable.initTable(actions, system)
+    if debug_flag:
+        print("***************** init-Table_1 is as follow *******************")
+        table.show()
+
+    ### learning start
     equivalent = False
-    eq_total_time = 0
-    table = copy.deepcopy(T1)
-    eq_number = 0
-    target = None
+    learned_system = None  # learned model
+    table_num = 1  # number of table
+
     while not equivalent and time.time() - startTime <= timeout:
-        prepared = table.is_prepared(AA)
+        ### make table prepared
+        prepared = table.is_prepared()
         while not prepared:
-            flag_closed, new_S, new_R, move = table.is_closed()
-            if not flag_closed:
-                temp = make_closed(new_S, new_R, move, table, sigma, AA)
-                table = temp
-                t_number = t_number + 1
-                if debug:
-                    print("Table " + str(t_number) + " is as follow.")
+            # make closed
+            closed_flag, close_move = table.is_closed()
+            if not closed_flag:
+                table = obsTable.make_closed(table, actions, close_move, system)
+                table_num = table_num + 1
+                if debug_flag:
+                    print("***************** closed-Table_" + str(table_num) + " is as follow *******************")
                     table.show()
-                    print("--------------------------------------------------")
-            flag_consistent, new_a, new_e_index = table.is_consistent()
-            if not flag_consistent:
-                temp = make_consistent(new_a, new_e_index, table, sigma, AA)
-                table = temp
-                t_number = t_number + 1
-                if debug:
-                    print("Table " + str(t_number) + " is as follow.")
+
+            # make consistent
+            consistent_flag, consistent_add = table.is_consistent()
+            if not consistent_flag:
+                consistent_flag, consistent_add = table.is_consistent()
+                table = obsTable.make_consistent(table, consistent_add, system)
+                table_num = table_num + 1
+                if debug_flag:
+                    print("***************** consistent-Table_" + str(table_num) + " is as follow *******************")
                     table.show()
-                    print("--------------------------------------------------")
-            flag_evi_closed, new_added = table.is_evidence_closed(AA)
-            if not flag_evi_closed:
-                temp = make_evidence_closed(new_added, table, sigma, AA)
-                table = temp
-                t_number = t_number + 1
-                if debug:
-                    print("Table " + str(t_number) + " is as follow.")
-                    table.show()
-                    print("--------------------------------------------------")
-            prepared = table.is_prepared(AA)
-        fa, sink_name = to_fa(table, t_number)
-        h = fa_to_ota(fa, sink_name, sigma, t_number)
+            prepared = table.is_prepared()
+
+        ### build hypothesis
+        # Discrete OTA
+        discreteOTA = struct_discreteOTA(table, actions)
+        if discreteOTA is None:
+            raise Exception('Attention!!!')
+        if debug_flag:
+            print("***************** discreteOTA_" + str(system.eq_num + 1) + " is as follow. *******************")
+            discreteOTA.show_discreteOTA()
+        # Hypothesis OTA
+        hypothesisOTA = struct_hypothesisOTA(discreteOTA)
+        if debug_flag:
+            print("***************** Hypothesis_" + str(system.eq_num + 1) + " is as follow. *******************")
+            hypothesisOTA.show_OTA()
+
         # 添加到 middleModels
-        addMiddleModels(learning_id, remove_sinklocation(copy.deepcopy(h)))
-        target = copy.deepcopy(h)
-        eq_start = time.time()
-        equivalent, ctx = equivalence_query(max_time_value, AA, h)
-        eq_end = time.time()
-        eq_total_time = eq_total_time + eq_end - eq_start
-        eq_number = eq_number + 1
+        addMiddleModels(learning_id, remove_sink_state(copy.deepcopy(hypothesisOTA).build_simple_hypothesis()))
+
+        ### comparator + EQs
+        if comparator_flag:
+            ctx_flag, ctx = model_compare(learned_system, hypothesisOTA, system)
+            if ctx_flag:
+                ### EQs
+                equivalent, ctx = EQs(hypothesisOTA, system)
+                learned_system = copy.deepcopy(hypothesisOTA)
+            else:
+                if debug_flag:
+                    print("Comparator found a counterexample!!!")
+                equivalent = False
+        else:
+            # without comparator
+            learned_system = copy.deepcopy(hypothesisOTA)
+            ### EQs
+            equivalent, ctx = EQs(hypothesisOTA, system)
+
         if not equivalent:
-            temp = add_ctx(ctx.tws, table, AA)
-            table = temp
-            t_number = t_number + 1
-            if debug:
-                print("Table " + str(t_number) + " is as follow.")
+            # show ctx
+            if debug_flag:
+                print("***************** counterexample is as follow. *******************")
+                print([dtw.show() for dtw in ctx])
+            # deal with ctx
+            table = obsTable.deal_ctx(table, ctx, system)
+            table_num = table_num + 1
+            if debug_flag:
+                print("***************** New-Table" + str(table_num) + " is as follow *******************")
                 table.show()
-                print("--------------------------------------------------")
-    end_learning = time.time()
-    if target is None or not equivalent:
+
+    endLearning = time.time()
+    if learned_system is None or not equivalent:
         value = {
             "isFinished": True,
             "result": {
@@ -88,19 +106,19 @@ def white_smart_learning(learning_id, request_data, startTime, timeout, debug=Fa
             "model": None
         }
     else:
+        # verify model quality
+        learned_system = remove_sink_state(learned_system.build_simple_hypothesis())
         print('success')
-        target_without_sink = remove_sinklocation(target)
         value = {
             "isFinished": True,
             "result": {
                 "result": 'success',
-                "learningTime": end_learning - start,
-                "mqNum": (len(table.S) + len(table.R)) * (len(table.E) + 1),
-                "eqNum": eq_number,
-                "learnedState": len(target_without_sink.locations),
-                "tables explored": t_number
+                "learningTime": endLearning - startLearning,
+                "mqNum": system.mq_num,
+                "eqNum": system.eq_num,
+                "tables explored": table_num
             },
-            "model": ota_to_JSON(target_without_sink)
+            "model": ota_to_JSON(learned_system)
         }
     update_cache(learning_id, value)
     return True
@@ -109,16 +127,12 @@ def white_smart_learning(learning_id, request_data, startTime, timeout, debug=Fa
 def ota_to_JSON(ota):
     trans = {}
     for i in range(len(ota.trans)):
-        trans[i] = [ota.trans[i].source, ota.trans[i].label, ota.trans[i].show_constraints(), ota.trans[i].reset, ota.trans[i].target]
-    states = []
-    for j in range(len(ota.locations)):
-        states.append(ota.locations[j].name)
+        trans[i] = [ota.trans[i].source, ota.trans[i].action, ota.trans[i].show_guards(), ota.trans[i].reset, ota.trans[i].target]
     value = {
-        "states": states,
-        "inputs": ota.sigma,
-        "initState": ota.initstate_name,
-        "acceptStates": ota.accept_names,
-        "sinkState": ota.sink_name,
+        "states": ota.states,
+        "inputs": ota.actions,
+        "initState": ota.init_state,
+        "acceptStates": ota.accept_states,
         "trans": trans
     }
     return value

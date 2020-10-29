@@ -146,6 +146,7 @@ def ota_to_JSON(ota):
 
 def addMiddleModels(learning_id, ota):
     value = {
+        "lastModified": time.time(),
         "middleModels": ota_to_JSON(ota)
     }
     update_cache(learning_id, value)
