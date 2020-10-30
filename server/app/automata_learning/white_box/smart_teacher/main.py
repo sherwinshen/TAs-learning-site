@@ -6,13 +6,11 @@ import app.automata_learning.white_box.smart_teacher.obsTable as obsTable
 from app.automata_learning.white_box.smart_teacher.system import build_system
 from app.automata_learning.white_box.smart_teacher.hypothesis import struct_discreteOTA, struct_hypothesisOTA, remove_sink_state
 from app.automata_learning.white_box.smart_teacher.teacher import EQs
-from app.automata_learning.white_box.smart_teacher.comparator import model_compare
 
 
 def white_smart_learning(learning_id, request_data, startTime, timeout, debug_flag=True):
     system = build_system(request_data['model'])
     actions = system.actions
-    comparator_flag = True
 
     startLearning = time.time()
     ### init Table
@@ -67,22 +65,9 @@ def white_smart_learning(learning_id, request_data, startTime, timeout, debug_fl
         # 添加到 middleModels
         addMiddleModels(learning_id, remove_sink_state(copy.deepcopy(hypothesisOTA).build_simple_hypothesis()))
 
-        ### comparator + EQs
-        if comparator_flag:
-            ctx_flag, ctx = model_compare(learned_system, hypothesisOTA, system)
-            if ctx_flag:
-                ### EQs
-                equivalent, ctx = EQs(hypothesisOTA, system)
-                learned_system = copy.deepcopy(hypothesisOTA)
-            else:
-                if debug_flag:
-                    print("Comparator found a counterexample!!!")
-                equivalent = False
-        else:
-            # without comparator
-            learned_system = copy.deepcopy(hypothesisOTA)
-            ### EQs
-            equivalent, ctx = EQs(hypothesisOTA, system)
+        learned_system = copy.deepcopy(hypothesisOTA)
+        ### EQs
+        equivalent, ctx = EQs(hypothesisOTA, system)
 
         if not equivalent:
             # show ctx
