@@ -40,6 +40,8 @@
 1. [exact_learn_DOTAs](https://github.com/MrEnvision/exact_learn_DOTAs) 或 [OTALearning](https://github.com/Leslieaj/OTALearning) + [OTALearningNormal](https://github.com/Leslieaj/OTALearningNormal): This prototype tool is dedicated to actively learning deterministic one-clock timed automata (DOTAs). (The evaluated artifact by TACAS-2020 is also archived in the [Figshare repository](https://doi.org/10.6084/m9.figshare.11545983.v3).)
 2. [pac_learn_DOTAs](https://github.com/MrEnvision/pac_learn_DOTAs): This prototype tool is dedicated to actively learning DOTAs under more realistic assumptions within the framework of PAC learning. 
 
----
 
-Please let me know if you have any questions 👉 [EnvisionShen@gmail.com](mailto:EnvisionShen@gmail.com)
+
+------
+
+如果发现本项目有错误，欢迎提交 issues 指正。
