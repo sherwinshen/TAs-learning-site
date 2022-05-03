@@ -25,3 +25,4 @@ client/yarn-error.log*
 /.idea
 /client/.idea
 /server/.idea
+.DS_Store
