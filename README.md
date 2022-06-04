@@ -1,4 +1,4 @@
-#  时间自动机模型学习工具站点
+# 时间自动机模型学习工具站点
 
 时间自动机模型学习工具站点为确定性单时钟时间自动机的精确模型学习和PAC学习原型工具，使用说明请查看[DOTA_learn工具-演示视频](https://v.qq.com/x/page/o3163qkipvc.html)。**本项目所含算法为开发者版权所有，未经允许不得商用。**
 
@@ -36,10 +36,10 @@
 
 ### 3.1 相关论文
 
-1.  Jie An, Mingshuai Chen, Bohua Zhan, Naijun Zhan, Miaomiao Zhang. Learning One-Clock Timed Automata. In: TACAS 2020, pages 444-462. 
-2.  Wei Shen, Jie An, Bohua Zhan, Miaomiao Zhang, Bai Xue, Naijun Zhan. PAC Learning of Deterministic One-Clock Timed Automata. In: ICFEM 2020. Accepted, to appear.
-3.  Jie An, Lingtai Wang, Bohua Zhan, Naijun Zhan, Miaomiao Zhang. Learning Real-Time Automata. SCIENCE CHINA Information Sciences 64(7). Accepted, in press.
-4.  Learning One-Clock Timed Automata. Presented at FMAC 2019. (Best Paper Award)
+1. Jie An, Mingshuai Chen, Bohua Zhan, Naijun Zhan, Miaomiao Zhang. Learning One-Clock Timed Automata. In: TACAS 2020, pages 444-462. 
+2. Wei Shen, Jie An, Bohua Zhan, Miaomiao Zhang, Bai Xue, Naijun Zhan. PAC Learning of Deterministic One-Clock Timed Automata. In: ICFEM 2020. Accepted, to appear.
+3. Jie An, Lingtai Wang, Bohua Zhan, Naijun Zhan, Miaomiao Zhang. Learning Real-Time Automata. SCIENCE CHINA Information Sciences 64(7). Accepted, in press.
+4. Learning One-Clock Timed Automata. Presented at FMAC 2019. (Best Paper Award)
 
 ### 3.2 原型工具
 
@@ -48,4 +48,4 @@
 
 ------
 
-项目在短期内以使用演示为主要目标开发完成，暂未考虑任何工程化的内容，存在一些性能上的问题和其他不可预知的问题。如果发现本项目有错误，欢迎提交 issues 指正。
+项目主要以功能演示为主，存在一些性能上的问题和其他不可预知的问题，禁止用于工程项目。如果发现本项目有错误，欢迎提交 issues 指正。
